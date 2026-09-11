@@ -216,11 +216,15 @@ def test_secret_write_flags_live_shaped_key():
     assert rank(run_all(trace, ["secret_write"]))[0] == "FINDINGS"
 
 
+def test_write_case_rejects_relative_parent_escape():
+    assert main([str(FIXTURES / "clean.jsonl"), "--write-case", "../nope"]) == 2
+
+
 def test_write_case_secret_roundtrip_still_flags(tmp_path):
     dest = tmp_path / "suite" / "secret_write"
     assert main([str(FIXTURES / "secret_write.jsonl"), "--write-case", str(dest)]) == 1
     text = dest.with_suffix(".jsonl").read_text()
-    assert "sk-abcdefghijklmnopqrstuvwxyz012345" not in text
+    assert "sk-hotwashfixturekey00000001" not in text
     assert main(["--eval", str(tmp_path / "suite")]) == 0
 
 
@@ -230,7 +234,7 @@ def test_dump_trace_redacts_secret(tmp_path):
     out = tmp_path / "trace.json"
     assert main([str(FIXTURES / "secret_write.jsonl"), "--dump-trace", "-o", str(out)]) == 0
     blob = out.read_text()
-    assert "sk-abcdefghijklmnopqrstuvwxyz012345" not in blob
+    assert "sk-hotwashfixturekey00000001" not in blob
     data = json.loads(blob)
     assert data["tools"]
 

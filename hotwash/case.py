@@ -82,10 +82,11 @@ def expect_from_findings(findings: list[Finding]) -> dict:
 
 def write_case(trace: Trace, findings: list[Finding], dest: Path) -> tuple[Path, Path]:
     dest = Path(dest)
-    if dest.suffix:
-        stem = dest.with_suffix("")
-    else:
-        stem = dest
+    if dest.suffix in {".jsonl", ".json"}:
+        dest = dest.with_suffix("")
+    if not dest.is_absolute() and ".." in dest.parts:
+        raise ValueError("write-case dest must not contain '..'")
+    stem = dest
     stem.parent.mkdir(parents=True, exist_ok=True)
     jsonl = stem.with_suffix(".jsonl")
     expect = Path(str(stem) + ".expect.json")

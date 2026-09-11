@@ -11,7 +11,9 @@ runs:
   steps:
     - name: Install hotwash
       shell: bash
-      run: python3 -m pip install -q "${{ github.action_path }}"
+      run: python3 -m pip install -q "$GITHUB_ACTION_PATH"
     - name: Eval
       shell: bash
-      run: python3 -m hotwash --eval "${{ inputs.path }}"
+      env:
+        HOTWASH_CASES: ${{ inputs.path }}
+      run: python3 -m hotwash --eval "$HOTWASH_CASES"

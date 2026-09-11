@@ -111,10 +111,13 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     if path == "-":
+        import os
         import tempfile
 
         raw = sys.stdin.read()
-        tmp = Path(tempfile.mkdtemp(prefix="hotwash-")) / "stdin.jsonl"
+        tmpdir = tempfile.mkdtemp(prefix="hotwash-")
+        os.chmod(tmpdir, 0o700)
+        tmp = Path(tmpdir) / "stdin.jsonl"
         tmp.write_text(raw)
         path = str(tmp)
 
@@ -143,7 +146,11 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     if args.write_case:
-        jsonl, expect = write_case(trace, findings, Path(args.write_case))
+        try:
+            jsonl, expect = write_case(trace, findings, Path(args.write_case))
+        except ValueError as e:
+            print(f"hotwash: {e}", file=sys.stderr)
+            return 2
         print(f"wrote {jsonl}", file=sys.stderr)
         print(f"wrote {expect}", file=sys.stderr)
 

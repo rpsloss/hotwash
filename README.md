@@ -127,6 +127,8 @@ PYTHONPATH=. python3 -m hotwash --eval cases
 CI workflow lives at `contrib/test.yml`. Copy it to `.github/workflows/test.yml`
 if the GitHub token has `workflow` scope.
 
+See [SECURITY.md](SECURITY.md) for secret handling, the GitHub Action, and how to report issues.
+
 ## License
 
 MIT
