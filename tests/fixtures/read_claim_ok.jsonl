@@ -1,0 +1,4 @@
+{"role": "user", "content": "please inspect src/app.py"}
+{"role": "assistant", "content": "Reading src/app.py.", "tool_calls": [{"id": "c1", "name": "read_file", "arguments": "{\"path\":\"src/app.py\"}"}]}
+{"role": "tool", "id": "c1", "name": "read_file", "outcome": "success", "content": "x = 1"}
+{"role": "assistant", "content": "I read `src/app.py`."}
