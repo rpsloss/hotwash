@@ -5,16 +5,22 @@ import re
 from hotwash.detectors.util import blob, command, failed
 from hotwash.model import Finding, Trace
 
-ASK = re.compile(r"\b(push to git|git push|commit and push|push (it|this) to (github|origin|main))\b", re.I)
-CLAIM = re.compile(r"\b(pushed to (main|origin|github)|git push succeeded|it's on github)\b", re.I)
-PUSH_CMD = re.compile(r"\bgit\s+push\b")
+ASK = re.compile(
+    r"\b(git commit|commit (the )?(changes|this|it|fix)|commit and push|make a commit|please commit)\b",
+    re.I,
+)
+CLAIM = re.compile(
+    r"\b((?:I|we) committed|committed (the )?(changes|fix|it)|git commit succeeded|created a commit|commit (is|was) (in|done))\b",
+    re.I,
+)
+COMMIT_CMD = re.compile(r"\bgit\s+(?:-c\s+\S+\s+)*commit\b")
 
 
-def _pushed(trace: Trace) -> bool:
+def _committed(trace: Trace) -> bool:
     for tool in trace.tools:
         if failed(tool):
             continue
-        if PUSH_CMD.search(command(tool)) or PUSH_CMD.search(blob(tool)):
+        if COMMIT_CMD.search(command(tool)) or COMMIT_CMD.search(blob(tool)):
             return True
     return False
 
@@ -33,24 +39,24 @@ def run(trace: Trace) -> list[Finding]:
             break
     if not asked and not claimed:
         return []
-    if _pushed(trace):
+    if _committed(trace):
         return []
     if claimed:
         return [
             Finding(
-                detector="push_claim",
+                detector="commit_claim",
                 severity="error",
-                title="claimed a git push that is not in the trace",
-                detail="The assistant said the commit was pushed. No successful git push appears in the tools.",
+                title="claimed a git commit that is not in the trace",
+                detail="The assistant said it committed. No successful git commit appears in the tools.",
                 evidence=snip.strip() or _snip(trace.assistant_text()),
             )
         ]
     return [
         Finding(
-            detector="push_claim",
+            detector="commit_claim",
             severity="warn",
-            title="a push was requested; no git push in the trace",
-            detail="The user asked to push. The session never ran git push, or it failed.",
+            title="a commit was requested; no git commit in the trace",
+            detail="The user asked to commit. The session never ran git commit, or it failed.",
             evidence=_snip(trace.user_text()),
         )
     ]

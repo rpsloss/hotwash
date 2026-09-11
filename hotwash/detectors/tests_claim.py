@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from hotwash.detectors.tool_error import _failed
+from hotwash.detectors.util import blob, failed
 from hotwash.model import Finding, Trace
 
 CLAIM = re.compile(
@@ -17,7 +17,7 @@ TEST_HINT = re.compile(
 
 
 def run(trace: Trace) -> list[Finding]:
-    test_ok = [t for t in trace.tools if TEST_HINT.search(t.blob()) and not _failed(t)]
+    test_ok = [t for t in trace.tools if TEST_HINT.search(blob(t)) and not failed(t)]
     claimed = bool(CLAIM.search(trace.assistant_text()))
     asked = bool(ASK.search(trace.user_text()))
     if claimed and not test_ok:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 
+from hotwash.detectors.commit_claim import run as commit_claim_run
 from hotwash.detectors.emdash import run as emdash_run
 from hotwash.detectors.git_identity import run as git_identity_run
 from hotwash.detectors.push_claim import run as push_claim_run
@@ -9,11 +10,13 @@ from hotwash.detectors.ship_claim import run as ship_claim_run
 from hotwash.detectors.tests_claim import run as tests_claim_run
 from hotwash.detectors.todos import run as todos_run
 from hotwash.detectors.tool_error import run as tool_error_run
+from hotwash.detectors.verify_http import run as verify_http_run
 from hotwash.model import Finding, Trace
 
 Detector = Callable[[Trace], list[Finding]]
 
 REGISTRY: dict[str, Detector] = {
+    "commit_claim": commit_claim_run,
     "emdash": emdash_run,
     "git_identity": git_identity_run,
     "push_claim": push_claim_run,
@@ -21,6 +24,7 @@ REGISTRY: dict[str, Detector] = {
     "tests_claim": tests_claim_run,
     "todos": todos_run,
     "tool_error": tool_error_run,
+    "verify_http": verify_http_run,
 }
 
 

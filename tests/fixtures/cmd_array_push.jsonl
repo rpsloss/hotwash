@@ -1,0 +1,3 @@
+{"role": "user", "content": "git push please"}
+{"role": "assistant", "content": "Pushing now.", "tool_calls": [{"id": "c1", "name": "shell", "arguments": "{\"cmd\":[\"git\",\"push\",\"origin\",\"main\"]}"}]}
+{"role": "tool", "id": "c1", "name": "shell", "outcome": "success", "content": "main -> main"}

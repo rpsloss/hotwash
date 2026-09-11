@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from hotwash.ingest.claude import load_claude
+from hotwash.ingest.codex import load_codex
 from hotwash.ingest.generic import load_generic
 from hotwash.ingest.grok import load_grok
 from hotwash.ingest.sniff import sniff_file
@@ -31,4 +32,6 @@ def load(path: str | Path) -> Trace:
     kind = sniff_file(p)
     if kind == "claude":
         return load_claude(p)
+    if kind == "codex":
+        return load_codex(p)
     return load_generic(p)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from hotwash.detectors.tool_error import _failed
+from hotwash.detectors.util import blob, failed, is_http_tool
 from hotwash.model import Finding, Trace
 
 SHIP_ASK = re.compile(
@@ -19,16 +19,24 @@ VERIFY_HINT = re.compile(
 )
 
 
+def _did_verify(trace: Trace) -> bool:
+    """Any HTTP probe counts; verify_http judges whether the status was live."""
+    for t in trace.tools:
+        if is_http_tool(t):
+            return True
+        if failed(t):
+            continue
+        if VERIFY_HINT.search(blob(t)):
+            return True
+    return False
+
+
 def run(trace: Trace) -> list[Finding]:
     asked = bool(SHIP_ASK.search(trace.user_text()))
     if not asked:
         return []
 
-    verify_tools = [
-        t for t in trace.tools if VERIFY_HINT.search(t.blob()) and not _failed(t)
-    ]
     findings: list[Finding] = []
-
     claimed = False
     claim_snip = ""
     for msg in trace.messages:
@@ -40,7 +48,10 @@ def run(trace: Trace) -> list[Finding]:
             claim_snip = msg.content[max(0, m.start() - 40) : m.end() + 80]
             break
 
-    if claimed and not verify_tools:
+    if _did_verify(trace):
+        return []
+
+    if claimed:
         findings.append(
             Finding(
                 detector="ship_claim",
@@ -50,7 +61,7 @@ def run(trace: Trace) -> list[Finding]:
                 evidence=claim_snip.strip(),
             )
         )
-    elif asked and not verify_tools:
+    else:
         findings.append(
             Finding(
                 detector="ship_claim",

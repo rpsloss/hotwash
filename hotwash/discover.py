@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 
@@ -31,7 +32,7 @@ def latest_grok_session(root: Path | None = None) -> Path:
 def latest_session() -> Path:
     rows = all_sessions()
     if not rows:
-        raise FileNotFoundError("No Grok or Claude sessions found")
+        raise FileNotFoundError("No Grok, Claude, or Codex sessions found")
     return rows[0][1]
 
 
@@ -54,11 +55,30 @@ def claude_sessions(root: Path | None = None) -> list[Path]:
     return found
 
 
+def default_codex_root() -> Path:
+    home = os.environ.get("CODEX_HOME")
+    if home:
+        return Path(home).expanduser() / "sessions"
+    return Path.home() / ".codex" / "sessions"
+
+
+def codex_sessions(root: Path | None = None) -> list[Path]:
+    """Newest-first Codex CLI rollout JSONL files."""
+    base = Path(root) if root is not None else default_codex_root()
+    if not base.exists():
+        return []
+    found = list(base.rglob("rollout-*.jsonl"))
+    found.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return found
+
+
 def all_sessions() -> list[tuple[str, Path]]:
     rows: list[tuple[float, str, Path]] = []
     for path in grok_sessions():
         rows.append((path.stat().st_mtime, "grok", path))
     for path in claude_sessions():
         rows.append((path.stat().st_mtime, "claude", path))
+    for path in codex_sessions():
+        rows.append((path.stat().st_mtime, "codex", path))
     rows.sort(key=lambda r: r[0], reverse=True)
     return [(kind, path) for _, kind, path in rows]

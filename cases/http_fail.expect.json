@@ -1,0 +1,9 @@
+{
+  "rank": "FINDINGS",
+  "must_include": [
+    "verify_http"
+  ],
+  "must_not_include": [
+    "ship_claim"
+  ]
+}

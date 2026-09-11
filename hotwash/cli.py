@@ -9,7 +9,7 @@ from pathlib import Path
 from hotwash import __version__
 from hotwash.case import eval_dir, render_eval, write_case
 from hotwash.detectors import REGISTRY, run_all
-from hotwash.discover import all_sessions, grok_sessions, latest_session
+from hotwash.discover import all_sessions, latest_session
 from hotwash.ingest import load
 from hotwash.report import render_md, render_text, to_json
 
@@ -20,8 +20,13 @@ def main(argv: list[str] | None = None) -> int:
         description="After-action review for a coding-agent session. Local, no cloud.",
     )
     p.add_argument("path", nargs="?", help="Grok session directory or JSONL trace")
-    p.add_argument("--latest", action="store_true", help="Review the newest Grok or Claude session")
-    p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok and Claude sessions, newest first")
+    p.add_argument("--latest", action="store_true", help="Review the newest Grok, Claude, or Codex session")
+    p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok, Claude, and Codex sessions, newest first")
+    p.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat warnings as errors (exit 1 if any finding)",
+    )
     p.add_argument("--format", choices=["text", "md", "json"], default="text")
     p.add_argument(
         "--dump-trace",
@@ -125,16 +130,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if any(f.severity == "error" for f in findings):
         return 1
+    if args.strict and findings:
+        return 1
     return 0
 
 
 def _list() -> int:
     sessions = all_sessions()
     if not sessions:
-        grok = grok_sessions()
-        if not grok:
-            print("hotwash: no Grok or Claude sessions found", file=sys.stderr)
-            return 2
+        print("hotwash: no Grok, Claude, or Codex sessions found", file=sys.stderr)
+        return 2
     for kind, path in sessions:
         mtime = datetime.fromtimestamp(path.stat().st_mtime).isoformat(timespec="seconds")
         print(f"{mtime}  {kind:6}  {path}")

@@ -24,8 +24,18 @@ def first_objects(path: Path, n: int = 12) -> list[dict[str, Any]]:
     return rows
 
 
+CODEX_TYPES = {
+    "session_meta",
+    "event_msg",
+    "response_item",
+    "turn_context",
+    "compacted",
+    "world_state",
+}
+
+
 def sniff_file(path: Path) -> str:
-    """Return 'claude', 'generic', or 'empty'."""
+    """Return 'claude', 'codex', 'generic', or 'empty'."""
     rows = first_objects(path)
     if not rows:
         return "empty"
@@ -37,6 +47,11 @@ def sniff_file(path: Path) -> str:
             and (msg.get("role") in {"user", "assistant"} or "content" in msg)
         ):
             return "claude"
+    for row in rows:
+        kind = row.get("type") or row.get("record_type")
+        payload = row.get("payload")
+        if kind in CODEX_TYPES and isinstance(payload, dict):
+            return "codex"
     return "generic"
 
 

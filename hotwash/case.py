@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from hotwash.detectors import run_all
+from hotwash.detectors import REGISTRY, run_all
 from hotwash.ingest import load
 from hotwash.model import Finding, Trace
 from hotwash.report import rank
@@ -160,11 +160,22 @@ def render_eval(rows: list[dict]) -> str:
         "",
         f"{'CASE':<24} {'GOT':<10} {'EXPECT':<10} STATUS",
     ]
+    covered: set[str] = set()
     for row in rows:
-        status = "ok" if row["ok"] else "FAIL " + "; ".join(row["problems"])
+        dets = row.get("detectors") or []
+        covered.update(dets)
+        extra = ",".join(dets) if dets else "-"
+        if row["ok"]:
+            status = f"ok  {extra}"
+        else:
+            status = "FAIL " + "; ".join(row["problems"])
         lines.append(f"{row['name']:<24} {row['rank']:<10} {row['expect_rank']:<10} {status}")
     ok = sum(1 for r in rows if r["ok"])
     lines.append("")
     lines.append(f"{ok}/{len(rows)} passed")
+    missing = [n for n in REGISTRY if n not in covered]
+    lines.append("detectors fired: " + (", ".join(sorted(covered)) if covered else "-"))
+    if missing:
+        lines.append("no case fired: " + ", ".join(missing))
     lines.append("")
     return "\n".join(lines)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from hotwash.detectors.util import command
 from hotwash.model import Finding, Trace
 
 HOST_EMAIL = re.compile(r"@Mac\.lan\b|@[^.\s]+\.local\b", re.I)
@@ -11,9 +12,8 @@ COMMIT_CMD = re.compile(r"\bgit\s+(?:-c\s+\S+\s+)*commit\b")
 
 def run(trace: Trace) -> list[Finding]:
     findings: list[Finding] = []
-    for tool in trace.tools_named("run_terminal_command", "bash", "shell"):
-        args = tool.args_dict()
-        cmd = str(args.get("command") or args.get("cmd") or tool.arguments)
+    for tool in trace.tools:
+        cmd = command(tool)
         if not COMMIT_CMD.search(cmd):
             continue
         attributed = (
