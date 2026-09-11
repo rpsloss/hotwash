@@ -1,0 +1,4 @@
+{"role": "user", "content": "revert that commit"}
+{"role": "assistant", "content": "Reverting the commit.", "tool_calls": [{"id": "c1", "name": "run_terminal_command", "arguments": "{\"command\":\"git revert HEAD\"}"}]}
+{"role": "tool", "id": "c1", "name": "run_terminal_command", "outcome": "success", "content": "[main abc1234] Revert \"bad commit\""}
+{"role": "assistant", "content": "I reverted. The revert succeeded."}
