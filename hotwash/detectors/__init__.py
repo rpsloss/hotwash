@@ -14,10 +14,14 @@ from hotwash.detectors.merge_claim import run as merge_claim_run
 from hotwash.detectors.pr_claim import run as pr_claim_run
 from hotwash.detectors.push_claim import run as push_claim_run
 from hotwash.detectors.read_claim import run as read_claim_run
+from hotwash.detectors.rebase_claim import run as rebase_claim_run
 from hotwash.detectors.refused_action import run as refused_action_run
+from hotwash.detectors.reset_claim import run as reset_claim_run
+from hotwash.detectors.revert_claim import run as revert_claim_run
 from hotwash.detectors.secret_write import run as secret_write_run
 from hotwash.detectors.ship_claim import run as ship_claim_run
 from hotwash.detectors.stale_verify import run as stale_verify_run
+from hotwash.detectors.stash_claim import run as stash_claim_run
 from hotwash.detectors.tag_claim import run as tag_claim_run
 from hotwash.detectors.tests_claim import run as tests_claim_run
 from hotwash.detectors.todos import run as todos_run
@@ -41,10 +45,14 @@ REGISTRY: dict[str, Detector] = {
     "pr_claim": pr_claim_run,
     "push_claim": push_claim_run,
     "read_claim": read_claim_run,
+    "rebase_claim": rebase_claim_run,
     "refused_action": refused_action_run,
+    "reset_claim": reset_claim_run,
+    "revert_claim": revert_claim_run,
     "secret_write": secret_write_run,
     "ship_claim": ship_claim_run,
     "stale_verify": stale_verify_run,
+    "stash_claim": stash_claim_run,
     "tag_claim": tag_claim_run,
     "tests_claim": tests_claim_run,
     "todos": todos_run,

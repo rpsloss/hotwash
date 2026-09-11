@@ -90,6 +90,10 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `install_claim` | Assistant claimed it installed a package, and no pip/npm/etc install ran |
 | `branch_claim` | Assistant claimed it created a git branch, and no checkout -b / switch -c ran |
 | `merge_claim` | Assistant claimed it merged, and no git merge / gh pr merge ran |
+| `rebase_claim` | Assistant claimed it rebased, and no git rebase ran |
+| `revert_claim` | Assistant claimed it reverted, and no git revert ran |
+| `reset_claim` | Assistant claimed it ran git reset, and no git reset ran |
+| `stash_claim` | Assistant claimed it stashed, and no git stash ran |
 | `tag_claim` | Assistant claimed it created a git tag, and no git tag ran |
 | `lint_claim` | Assistant claimed lint is clean, and no linter ran |
 | `format_claim` | Assistant claimed it formatted, and no black/prettier/ruff format ran |
@@ -108,7 +112,7 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## Status
 
-v0.10. Grok, Claude Code, Codex, and Cursor ingest, generic JSONL,
+v0.11. Grok, Claude Code, Codex, and Cursor ingest, generic JSONL,
 `--list --rank`, `--coverage`, dump-trace, write-case (secrets redacted),
 and `hotwash --eval`. An optional LLM judge is not in v0.
 

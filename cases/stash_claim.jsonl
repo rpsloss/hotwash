@@ -1,0 +1,2 @@
+{"role": "user", "content": "please git stash"}
+{"role": "assistant", "content": "I stashed. The changes are stashed."}

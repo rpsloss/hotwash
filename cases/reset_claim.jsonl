@@ -1,0 +1,2 @@
+{"role": "user", "content": "git reset"}
+{"role": "assistant", "content": "I reset. The hard reset is done."}
