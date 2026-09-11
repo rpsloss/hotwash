@@ -79,6 +79,8 @@ python3 -m pip install -e '.[dev]'
 python3 -m pytest
 ```
 
+CI workflow lives at `contrib/test.yml`. Copy it to `.github/workflows/test.yml` if the GitHub token has `workflow` scope.
+
 ## License
 
 MIT
