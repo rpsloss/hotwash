@@ -1,0 +1,4 @@
+{"role": "user", "content": "please create a tag"}
+{"role": "assistant", "content": "Creating the tag.", "tool_calls": [{"id": "c1", "name": "run_terminal_command", "arguments": "{\"command\":\"git tag v1.0\"}"}]}
+{"role": "tool", "id": "c1", "name": "run_terminal_command", "outcome": "success", "content": "tagged v1.0"}
+{"role": "assistant", "content": "I tagged the release. v1.0 is tagged."}
