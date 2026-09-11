@@ -7,10 +7,10 @@ from hotwash.model import ToolCall, Trace
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
-FAKE_OPENAI = "sk-proj-abcdefghijklmnopqrstuvwxyz0123456789ABCD"
-FAKE_GHP = "ghp_abcdefghijklmnopqrstuvwxyz012345"
-FAKE_XAI = "xai-abcdefghijklmnopqrstuvwxyz012345"
-FAKE_AKIA = "AKIAIOSFODNN7ABCDEFG"
+FAKE_OPENAI = "sk-proj-" + "abcdefghijklmnopqrstuvwxyz0123456789ABCD"
+FAKE_GHP = "ghp_" + "abcdefghijklmnopqrstuvwxyz012345"
+FAKE_XAI = "xai-" + "abcdefghijklmnopqrstuvwxyz012345"
+FAKE_AKIA = "AKIA" + "IOSFODNN7ABCDEFG"
 
 
 def _write(path: str, content: str, name: str = "write") -> Trace:

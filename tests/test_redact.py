@@ -5,11 +5,11 @@ from hotwash.case import REDACTED, trace_to_jsonl, write_case
 from hotwash.redact import REDACTED_TOKEN
 from hotwash.model import Message, ToolCall, Trace
 
-AWS_KEY = "AKIAIOSFODNN7EXAMPLE"
-GITHUB_PAT = "ghp_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+AWS_KEY = "AKIA" + "IOSFODNN7EXAMPLE"
+GITHUB_PAT = "ghp_" + "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 STRIPE_KEY = "sk" + "_live_" + "51AaBbCcDdEeFfGgHhIiJjKk"
-XAI_KEY = "xai-0123456789abcdefghijABCDEFGH"
-OPENAI_KEY = "sk-abcdefghijklmnopqrstuvwxyz012345"
+XAI_KEY = "xai-" + "0123456789abcdefghijABCDEFGH"
+OPENAI_KEY = "sk-" + "abcdefghijklmnopqrstuvwxyz012345"
 PEM_BODY = "MIIEowIBAAKFAKESECRET_q1r2s3t4u5v6w7x8y9z0"
 PEM = (
     "-----BEGIN RSA PRIVATE KEY-----\n"
