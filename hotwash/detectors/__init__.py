@@ -6,6 +6,7 @@ from hotwash.detectors.emdash import run as emdash_run
 from hotwash.detectors.git_identity import run as git_identity_run
 from hotwash.detectors.ship_claim import run as ship_claim_run
 from hotwash.detectors.todos import run as todos_run
+from hotwash.detectors.tool_error import run as tool_error_run
 from hotwash.model import Finding, Trace
 
 Detector = Callable[[Trace], list[Finding]]
@@ -15,6 +16,7 @@ REGISTRY: dict[str, Detector] = {
     "git_identity": git_identity_run,
     "ship_claim": ship_claim_run,
     "todos": todos_run,
+    "tool_error": tool_error_run,
 }
 
 

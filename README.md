@@ -35,16 +35,18 @@ PYTHONPATH=. python3 -m hotwash path/to/session
 ## Use
 
 ```bash
-hotwash --list                          # Grok sessions, newest first
-hotwash --latest                        # review the newest one
-hotwash ~/.grok/sessions/<ws>/<id>      # review a specific Grok session
+hotwash --list                          # Grok and Claude sessions, newest first
+hotwash --latest                        # review the newest Grok session
+hotwash ~/.grok/sessions/<ws>/<id>      # a Grok session directory
+hotwash ~/.claude/projects/<proj>/<id>.jsonl
 hotwash trace.jsonl --format md -o aar.md
-hotwash trace.jsonl --format json
-hotwash path --detectors emdash,git_identity
+hotwash path --dump-trace               # normalized trace, no detectors
+hotwash path --detectors emdash,tool_error
 ```
 
-A Grok session directory is one that contains `chat_history.jsonl`.
-Generic JSONL is one event per line (`role` / `type`, optional `tool_calls`).
+A Grok session directory contains `chat_history.jsonl`. Claude Code is a
+JSONL whose events have a `message` object. Anything else with `role`/`type`
+is generic JSONL. See [TRACE.md](TRACE.md).
 
 Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 
@@ -52,9 +54,10 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 
 | Detector | Fires when |
 | --- | --- |
+| `tool_error` | A tool failed and was not retried; error if the assistant then claimed success |
+| `ship_claim` | User asked to deploy or go live, and no *successful* curl, browser, or test ran |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
-| `ship_claim` | User asked to deploy or go live, and the trace has no curl, browser, or test |
 | `todos` | Last `todo_write` still has pending items (warn) |
 
 Each detector is `Trace -> list[Finding]`. Add one, add a test.
@@ -67,8 +70,8 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## Status
 
-v0. Grok session ingest and generic JSONL work. Session discovery works.
-Claude Code / Codex ingest and an optional LLM judge are not in v0.
+v0. Grok and Claude Code ingest, generic JSONL, session list, dump-trace.
+Codex ingest and an optional LLM judge are not in v0.
 
 ## Develop
 

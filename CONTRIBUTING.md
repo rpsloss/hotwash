@@ -17,3 +17,4 @@ Rules:
   and behind `XAI_API_KEY`, default SpaceXAI (`https://api.x.ai/v1`).
 - Do not add em dashes to user-facing copy. Yes, that is also a detector.
 - Findings need evidence from the trace, not a vibe.
+- New vendor logs go through ingest, then `--dump-trace`. Detectors never parse vendor files. See TRACE.md.

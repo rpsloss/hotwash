@@ -11,7 +11,7 @@ def load_generic(path: str | Path) -> Trace:
     """JSONL with role/type fields. One object per line."""
     p = Path(path)
     messages: list[Message] = []
-    tools: list[ToolCall] = []
+    tools_by_id: dict[str, ToolCall] = {}
     n = 0
     for line in p.read_text(errors="replace").splitlines():
         line = line.strip()
@@ -24,14 +24,24 @@ def load_generic(path: str | Path) -> Trace:
         n += 1
         role = str(row.get("role") or row.get("type") or "")
         if role in {"tool", "tool_result"}:
-            call = ToolCall(
-                id=str(row.get("id") or row.get("tool_call_id") or f"t{n}"),
-                name=str(row.get("name") or row.get("tool_name") or "tool"),
-                arguments=row.get("arguments") if isinstance(row.get("arguments"), str) else json.dumps(row.get("arguments") or {}),
-                result=str(row.get("content") or row.get("result") or ""),
-                outcome=str(row.get("outcome") or ""),
-            )
-            tools.append(call)
+            cid = str(row.get("id") or row.get("tool_call_id") or f"t{n}")
+            result = str(row.get("content") or row.get("result") or "")
+            outcome = str(row.get("outcome") or "")
+            if cid in tools_by_id:
+                tools_by_id[cid].result = result
+                if outcome:
+                    tools_by_id[cid].outcome = outcome
+            else:
+                args = row.get("arguments")
+                if not isinstance(args, str):
+                    args = json.dumps(args or {})
+                tools_by_id[cid] = ToolCall(
+                    id=cid,
+                    name=str(row.get("name") or row.get("tool_name") or "tool"),
+                    arguments=args,
+                    result=result,
+                    outcome=outcome,
+                )
             continue
         calls: list[ToolCall] = []
         for tc in row.get("tool_calls") or []:
@@ -40,16 +50,18 @@ def load_generic(path: str | Path) -> Trace:
             args = tc.get("arguments")
             if not isinstance(args, str):
                 args = json.dumps(args or {})
-            call = ToolCall(
-                id=str(tc.get("id") or f"t{n}-{len(calls)}"),
+            cid = str(tc.get("id") or f"t{n}-{len(calls)}")
+            call = tools_by_id.get(cid) or ToolCall(
+                id=cid,
                 name=str(tc.get("name") or "unknown"),
                 arguments=args,
             )
+            if cid not in tools_by_id:
+                tools_by_id[cid] = call
             calls.append(call)
-            tools.append(call)
         content = row.get("content")
         if not isinstance(content, str):
             content = json.dumps(content) if content is not None else ""
         if role:
             messages.append(Message(role=role, content=content, tool_calls=calls))
-    return Trace(source=str(p), messages=messages, tools=tools)
+    return Trace(source=str(p), messages=messages, tools=list(tools_by_id.values()))

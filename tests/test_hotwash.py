@@ -84,3 +84,31 @@ def test_cli_detectors_filter():
     code = main([str(FIXTURES / "grok_mini"), "--detectors", "todos"])
     # todos is warn-only on the dirty fixture, so exit 0
     assert code == 0
+
+
+def test_tool_error_after_failed_test_and_success_claim():
+    trace = load(FIXTURES / "tool_fail.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "tool_error" in dets
+    assert rank(run_all(trace, ["tool_error"]))[0] == "FINDINGS"
+
+
+def test_claude_ingest_and_failed_bash():
+    trace = load(FIXTURES / "claude_mini.jsonl")
+    assert trace.session_id == "claude-mini"
+    assert [t.name for t in trace.tools] == ["Bash"]
+    assert trace.tools[0].outcome == "error"
+    users = [m.content for m in trace.messages if m.role == "user"]
+    assert users == ["deploy this to production"]
+    dets = {f.detector for f in run_all(trace)}
+    assert "tool_error" in dets
+    assert "ship_claim" in dets
+
+
+def test_dump_trace_cli(tmp_path):
+    out = tmp_path / "trace.json"
+    code = main([str(FIXTURES / "clean.jsonl"), "--dump-trace", "-o", str(out)])
+    assert code == 0
+    data = __import__("json").loads(out.read_text())
+    assert "messages" in data
+    assert "tools" in data

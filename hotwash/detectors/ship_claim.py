@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from hotwash.detectors.tool_error import _failed
 from hotwash.model import Finding, Trace
 
 SHIP_ASK = re.compile(
@@ -23,7 +24,9 @@ def run(trace: Trace) -> list[Finding]:
     if not asked:
         return []
 
-    verify_tools = [t for t in trace.tools if VERIFY_HINT.search(t.blob())]
+    verify_tools = [
+        t for t in trace.tools if VERIFY_HINT.search(t.blob()) and not _failed(t)
+    ]
     findings: list[Finding] = []
 
     claimed = False

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from hotwash import __version__
 from hotwash.detectors import REGISTRY, run_all
-from hotwash.discover import grok_sessions, latest_grok_session
+from hotwash.discover import all_sessions, grok_sessions, latest_grok_session
 from hotwash.ingest import load
 from hotwash.report import render_md, render_text, to_json
 
@@ -20,8 +20,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument("path", nargs="?", help="Grok session directory or JSONL trace")
     p.add_argument("--latest", action="store_true", help="Review the newest Grok session")
-    p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok sessions, newest first")
+    p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok and Claude sessions, newest first")
     p.add_argument("--format", choices=["text", "md", "json"], default="text")
+    p.add_argument(
+        "--dump-trace",
+        action="store_true",
+        help="Print the normalized trace JSON instead of running detectors",
+    )
     p.add_argument("-o", "--out", help="Write the report to this file")
     p.add_argument(
         "--detectors",
@@ -51,8 +56,21 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         trace = load(path)
-        findings = run_all(trace, names)
     except (FileNotFoundError, ValueError) as e:
+        print(f"hotwash: {e}", file=sys.stderr)
+        return 2
+
+    if args.dump_trace:
+        body = json.dumps(trace.to_dict(), indent=2) + "\n"
+        if args.out:
+            Path(args.out).write_text(body)
+        else:
+            sys.stdout.write(body)
+        return 0
+
+    try:
+        findings = run_all(trace, names)
+    except ValueError as e:
         print(f"hotwash: {e}", file=sys.stderr)
         return 2
 
@@ -74,11 +92,13 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _list() -> int:
-    sessions = grok_sessions()
+    sessions = all_sessions()
     if not sessions:
-        print("hotwash: no Grok sessions found", file=sys.stderr)
-        return 2
-    for path in sessions:
+        grok = grok_sessions()
+        if not grok:
+            print("hotwash: no Grok or Claude sessions found", file=sys.stderr)
+            return 2
+    for kind, path in sessions:
         mtime = datetime.fromtimestamp(path.stat().st_mtime).isoformat(timespec="seconds")
-        print(f"{mtime}  {path}")
+        print(f"{mtime}  {kind:6}  {path}")
     return 0

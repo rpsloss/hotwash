@@ -66,3 +66,34 @@ class Trace:
     def tools_named(self, *names: str) -> list[ToolCall]:
         want = {n.lower() for n in names}
         return [t for t in self.tools if t.name.lower() in want]
+
+    def to_dict(self, result_limit: int = 400) -> dict[str, Any]:
+        def clip(text: str) -> str:
+            if len(text) <= result_limit:
+                return text
+            return text[:result_limit] + "..."
+
+        return {
+            "source": self.source,
+            "session_id": self.session_id,
+            "messages": [
+                {
+                    "role": m.role,
+                    "content": clip(m.content),
+                    "tool_calls": [c.id for c in m.tool_calls],
+                    "ts": m.ts,
+                }
+                for m in self.messages
+            ],
+            "tools": [
+                {
+                    "id": t.id,
+                    "name": t.name,
+                    "arguments": clip(t.arguments),
+                    "result": clip(t.result),
+                    "outcome": t.outcome,
+                    "ts": t.ts,
+                }
+                for t in self.tools
+            ],
+        }
