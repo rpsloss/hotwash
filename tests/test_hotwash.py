@@ -248,6 +248,7 @@ def test_codex_session_discovery(tmp_path, monkeypatch):
     monkeypatch.setenv("CODEX_HOME", str(tmp_path / "codex"))
     monkeypatch.setattr("hotwash.discover.grok_sessions", lambda: [])
     monkeypatch.setattr("hotwash.discover.claude_sessions", lambda: [])
+    monkeypatch.setattr("hotwash.discover.cursor_sessions", lambda: [])
     rows = all_sessions()
     assert rows[0][0] == "codex"
     assert latest_session() == rollout
@@ -286,3 +287,26 @@ def test_quiet_prints_rank_and_lines_only(capsys):
     assert "pr_claim" in out
     assert "HOTWASH" not in out
     assert "after-action review" not in out
+
+
+def test_write_claim_is_registered():
+    from hotwash.detectors import REGISTRY
+
+    assert "write_claim" in REGISTRY
+    dets = {f.detector for f in run_all(load(FIXTURES / "write_claim.jsonl"))}
+    assert "write_claim" in dets
+
+
+def test_cli_coverage_green_on_public_cases():
+    assert main(["--coverage", str(ROOT / "cases")]) == 0
+
+
+def test_list_rank_includes_path_and_rank(tmp_path, capsys, monkeypatch):
+    dest = tmp_path / "clean.jsonl"
+    dest.write_text((FIXTURES / "clean.jsonl").read_text())
+    monkeypatch.setattr("hotwash.cli.all_sessions", lambda: [("generic", dest)])
+    assert main(["--list", "--rank"]) == 0
+    out = capsys.readouterr().out
+    assert "CLEAN" in out
+    assert "generic" in out
+    assert str(dest) in out

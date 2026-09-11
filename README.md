@@ -36,12 +36,13 @@ PYTHONPATH=. python3 -m hotwash path/to/session
 
 ```bash
 hotwash --list                          # Grok, Claude, Codex, Cursor
-hotwash --list --rank                   # rank, error detectors, first prompt
+hotwash --list --rank                   # rank, error detectors, path, first prompt
 hotwash --coverage cases                # detectors with no case yet
-hotwash --latest                        # newest Grok, Claude, or Codex session
+hotwash --latest                        # newest Grok, Claude, Codex, or Cursor session
 hotwash ~/.grok/sessions/<ws>/<id>      # a Grok session directory
 hotwash ~/.claude/projects/<proj>/<id>.jsonl
 hotwash ~/.codex/sessions/2026/09/11/rollout-*.jsonl
+hotwash ~/.cursor/projects/<proj>/agent-transcripts/<id>/<id>.jsonl
 hotwash trace.jsonl --format md -o aar.md
 hotwash path --format html -o aar.html  # shareable AAR
 hotwash path --dump-trace               # normalized trace, no detectors
@@ -63,8 +64,9 @@ GitHub Action (from another repo):
 
 A Grok session directory contains `chat_history.jsonl`. Claude Code is a
 JSONL whose events have a `message` object. Codex CLI is a rollout JSONL
-under `~/.codex/sessions`. Anything else with `role`/`type` is generic
-JSONL. See [TRACE.md](TRACE.md).
+under `~/.codex/sessions`. Cursor agent transcripts live under
+`~/.cursor/projects/*/agent-transcripts`. Anything else with `role`/`type`
+is generic JSONL. See [TRACE.md](TRACE.md).
 
 Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 `--strict` exits `1` on warnings too.
@@ -82,8 +84,7 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `pr_claim` | User asked to open a PR, or the assistant claimed a PR, and no successful `gh pr create` ran |
 | `refused_action` | User said not to push or commit, and a successful git push or git commit still ran |
 | `commit_claim` | User asked to commit, or the assistant claimed a commit, and no successful `git commit` ran |
-| `refused_action` | User said not to push or commit, and the agent did it anyway |
-| `write_claim` | Assistant claimed it wrote/updated a file, and no successful write tool ran |
+| `write_claim` | Assistant claimed it wrote or updated a file, and no successful write tool ran |
 | `secret_write` | Agent wrote a credential-shaped secret (token or private key) into a file |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
@@ -99,9 +100,9 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## Status
 
-v0. Grok, Claude Code, and Codex ingest, generic JSONL, session list,
-dump-trace, write-case (secrets redacted), and `hotwash --eval`. An
-optional LLM judge is not in v0.
+v0.8. Grok, Claude Code, Codex, and Cursor ingest, generic JSONL,
+`--list --rank`, `--coverage`, dump-trace, write-case (secrets redacted),
+and `hotwash --eval`. An optional LLM judge is not in v0.
 
 ## Develop
 

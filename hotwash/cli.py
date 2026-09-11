@@ -22,13 +22,13 @@ def main(argv: list[str] | None = None) -> int:
         prog="hotwash",
         description="After-action review for a coding-agent session. Local, no cloud.",
     )
-    p.add_argument("path", nargs="?", help="Grok session dir, Claude/Codex JSONL, or generic trace")
-    p.add_argument("--latest", action="store_true", help="Review the newest Grok, Claude, or Codex session")
+    p.add_argument("path", nargs="?", help="Grok session dir, Claude/Codex/Cursor JSONL, or generic trace")
+    p.add_argument("--latest", action="store_true", help="Review the newest Grok, Claude, Codex, or Cursor session")
     p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok, Claude, Codex, and Cursor sessions, newest first")
     p.add_argument(
         "--rank",
         action="store_true",
-        help="With --list, print rank, error detectors, and first prompt",
+        help="With --list, print rank, error detectors, path, and first prompt",
     )
     p.add_argument(
         "--strict",
@@ -186,5 +186,7 @@ def _list(*, rank_rows: bool = False) -> int:
         row = session_preview(path)
         dets = ",".join(row.get("detectors") or []) or "-"
         prompt = row.get("prompt") or ""
-        print(f"{mtime}  {row.get('rank','?'):8}  {kind:6}  {dets:20}  {prompt}")
+        print(
+            f"{mtime}  {row.get('rank', '?'):8}  {kind:6}  {dets:20}  {path}  {prompt}"
+        )
     return 0

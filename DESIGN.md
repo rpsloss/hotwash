@@ -18,8 +18,9 @@ vendor session  -->  ingest adapter  -->  Trace  -->  detectors  -->  findings
 
 ## Layers
 
-1. **Ingest.** Grok dirs, Claude Code JSONL, Codex rollout JSONL, generic JSONL.
-   Adapters only. Detectors never import a vendor parser.
+1. **Ingest.** Grok dirs, Claude Code JSONL, Codex rollout JSONL, Cursor
+   agent-transcript JSONL, generic JSONL. Adapters only. Detectors never
+   import a vendor parser.
 2. **Trace.** `Message` + `ToolCall`. Failed work is `outcome=error` or `exit: 1`
    in `result`.
 3. **Detectors.** `Trace -> list[Finding]`. Deterministic. High precision over
@@ -36,7 +37,5 @@ vendor session  -->  ingest adapter  -->  Trace  -->  detectors  -->  findings
 
 ## Parallel work (this window)
 
-- secret_write, redaction, CLEAN pins, HTML AAR
-- stale_verify (curl before last write)
-- refused_action (don't push / don't commit)
-- pr_claim
+Landed: write_claim, Cursor ingest, ranked `--list`, eval coverage.
+Next slices own one new detector file plus its tests/fixtures only.
