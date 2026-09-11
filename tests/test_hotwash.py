@@ -251,3 +251,38 @@ def test_codex_session_discovery(tmp_path, monkeypatch):
     rows = all_sessions()
     assert rows[0][0] == "codex"
     assert latest_session() == rollout
+
+
+def test_stale_verify_curl_before_write():
+    trace = load(FIXTURES / "stale_verify.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "stale_verify" in dets
+    assert "ship_claim" not in dets
+    assert rank(run_all(trace, ["stale_verify"]))[0] == "FINDINGS"
+
+
+def test_stale_verify_curl_after_push_is_clean():
+    dets = {f.detector for f in run_all(load(FIXTURES / "clean.jsonl"))}
+    assert "stale_verify" not in dets
+
+
+def test_pr_claim_without_gh_pr_create():
+    trace = load(FIXTURES / "pr_fail.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "pr_claim" in dets
+    assert rank(run_all(trace, ["pr_claim"]))[0] == "FINDINGS"
+
+
+def test_pr_claim_gh_pr_create_is_clean():
+    dets = {f.detector for f in run_all(load(FIXTURES / "pr_ok.jsonl"))}
+    assert "pr_claim" not in dets
+
+
+def test_quiet_prints_rank_and_lines_only(capsys):
+    code = main([str(FIXTURES / "pr_fail.jsonl"), "--quiet"])
+    assert code == 1
+    out = capsys.readouterr().out
+    assert out.startswith("rank FINDINGS")
+    assert "pr_claim" in out
+    assert "HOTWASH" not in out
+    assert "after-action review" not in out

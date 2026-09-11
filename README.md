@@ -45,6 +45,7 @@ hotwash path --format html -o aar.html  # shareable AAR
 hotwash path --dump-trace               # normalized trace, no detectors
 hotwash path --detectors emdash,tool_error
 hotwash path --strict                   # warnings fail the process
+hotwash path --quiet                    # rank and finding lines only
 hotwash path --write-case cases/name    # freeze as portable JSONL + expect
 hotwash --eval cases                    # run the case suite
 cat trace.jsonl | hotwash -
@@ -74,8 +75,12 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `tests_claim` | Assistant said tests passed, and no successful test runner is in the trace |
 | `ship_claim` | User asked to deploy or go live, and no curl, browser, or test ran |
 | `verify_http` | User asked to ship (or the assistant claimed live) and the last curl/wget returned 4xx/5xx or a connection failure |
+| `stale_verify` | User asked to ship (or the assistant claimed live) and the last curl/wget ran *before* the last write or push |
 | `push_claim` | User asked to git push, or the assistant claimed a push, and no successful `git push` ran |
+| `pr_claim` | User asked to open a PR, or the assistant claimed a PR, and no successful `gh pr create` ran |
+| `refused_action` | User said not to push or commit, and a successful git push or git commit still ran |
 | `commit_claim` | User asked to commit, or the assistant claimed a commit, and no successful `git commit` ran |
+| `refused_action` | User said not to push or commit, and the agent did it anyway |
 | `secret_write` | Agent wrote a credential-shaped secret (token or private key) into a file |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |

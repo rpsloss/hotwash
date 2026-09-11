@@ -38,7 +38,9 @@ vendor file.
 
 Codex tool names (`shell`, `apply_patch`, `exec_command`) are first-class.
 `apply_patch` counts as a write. `Exit code: 1` in a tool result counts as
-failure, same as `exit: 1`.
+failure, same as `exit: 1`. Tool order in the normalized trace is the order
+detectors use for `stale_verify` (a curl before the last write or push is
+stale).
 
 ## Eval cases
 

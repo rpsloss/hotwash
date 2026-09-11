@@ -30,6 +30,19 @@ EXIT_FAIL = re.compile(
 )
 HTTP_STATUS = re.compile(r"(?im)^HTTP/\d(?:\.\d)?\s+(\d{3})\b")
 HTTP_TOOL = re.compile(r"\b(curl|httpie|wget)\b", re.I)
+SHIP_MUTATE = re.compile(
+    r"\bgit\s+(?:-c\s+\S+\s+)*commit\b"
+    r"|\bgit\s+push\b"
+    r"|\bvercel\b"
+    r"|\bnetlify\s+deploy\b"
+    r"|\bflyctl\s+deploy\b"
+    r"|\bwrangler\s+deploy\b"
+    r"|\bkubectl\s+apply\b"
+    r"|\bnpm\s+run\s+deploy\b"
+    r"|\bdocker\s+push\b"
+    r"|\bgh\s+workflow\s+run\b",
+    re.I,
+)
 HTTP_CONNECT_FAIL = re.compile(
     r"curl: \(\d+\)|Could not resolve host|Connection refused|Failed to connect|Couldn'?t connect",
     re.I,
@@ -153,3 +166,16 @@ def http_bad(tool: ToolCall) -> bool:
     if code < 0:
         return True
     return code >= 400
+
+
+COMMIT_CMD = re.compile(r"\bgit\s+(?:-c\s+\S+\s+)*commit\b")
+
+
+def is_ship_mutate(tool: ToolCall) -> bool:
+    """A tool that can change what a later live check would see."""
+    if is_write_tool(tool):
+        return True
+    if failed(tool):
+        return False
+    hay = command(tool) + "\n" + (tool.arguments or "")
+    return bool(SHIP_MUTATE.search(hay) or COMMIT_CMD.search(hay))

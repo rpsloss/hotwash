@@ -12,7 +12,7 @@ from hotwash.detectors import REGISTRY, run_all
 from hotwash.discover import all_sessions, latest_session
 from hotwash.ingest import load
 from hotwash.redact import redact_obj
-from hotwash.report import render_html, render_md, render_text, to_json
+from hotwash.report import rank, render_html, render_md, render_text, to_json
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -27,6 +27,11 @@ def main(argv: list[str] | None = None) -> int:
         "--strict",
         action="store_true",
         help="Treat warnings as errors (exit 1 if any finding)",
+    )
+    p.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Print rank and finding lines only",
     )
     p.add_argument("--format", choices=["text", "md", "json", "html"], default="text")
     p.add_argument(
@@ -117,7 +122,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"wrote {jsonl}", file=sys.stderr)
         print(f"wrote {expect}", file=sys.stderr)
 
-    if args.format == "json":
+    if args.quiet:
+        label, _ = rank(findings)
+        lines = [f"rank {label}"]
+        lines.extend(f.line() for f in findings)
+        body = "\n".join(lines) + "\n"
+    elif args.format == "json":
         body = json.dumps(to_json(trace, findings), indent=2) + "\n"
     elif args.format == "md":
         body = render_md(trace, findings)

@@ -1,0 +1,4 @@
+{"role": "user", "content": "please open a PR for this"}
+{"role": "assistant", "content": "Opening the pull request.", "tool_calls": [{"id": "c1", "name": "run_terminal_command", "arguments": "{\"command\":\"gh pr create --title fix --body ready\"}"}]}
+{"role": "tool", "id": "c1", "name": "run_terminal_command", "outcome": "success", "content": "https://github.com/rpsloss/hotwash/pull/1"}
+{"role": "assistant", "content": "Opened a PR."}

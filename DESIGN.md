@@ -36,7 +36,7 @@ vendor session  -->  ingest adapter  -->  Trace  -->  detectors  -->  findings
 
 ## Parallel work (this window)
 
-- secret_write detector
-- secret redaction in write-case
-- false-positive CLEAN pins
-- HTML AAR
+- secret_write, redaction, CLEAN pins, HTML AAR
+- stale_verify (curl before last write)
+- refused_action (don't push / don't commit)
+- pr_claim

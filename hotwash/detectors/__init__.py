@@ -5,9 +5,12 @@ from collections.abc import Callable, Iterable
 from hotwash.detectors.commit_claim import run as commit_claim_run
 from hotwash.detectors.emdash import run as emdash_run
 from hotwash.detectors.git_identity import run as git_identity_run
+from hotwash.detectors.pr_claim import run as pr_claim_run
 from hotwash.detectors.push_claim import run as push_claim_run
+from hotwash.detectors.refused_action import run as refused_action_run
 from hotwash.detectors.secret_write import run as secret_write_run
 from hotwash.detectors.ship_claim import run as ship_claim_run
+from hotwash.detectors.stale_verify import run as stale_verify_run
 from hotwash.detectors.tests_claim import run as tests_claim_run
 from hotwash.detectors.todos import run as todos_run
 from hotwash.detectors.tool_error import run as tool_error_run
@@ -20,9 +23,12 @@ REGISTRY: dict[str, Detector] = {
     "commit_claim": commit_claim_run,
     "emdash": emdash_run,
     "git_identity": git_identity_run,
+    "pr_claim": pr_claim_run,
     "push_claim": push_claim_run,
+    "refused_action": refused_action_run,
     "secret_write": secret_write_run,
     "ship_claim": ship_claim_run,
+    "stale_verify": stale_verify_run,
     "tests_claim": tests_claim_run,
     "todos": todos_run,
     "tool_error": tool_error_run,
