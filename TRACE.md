@@ -30,6 +30,7 @@ Shell tools may pass `command` as a string or as an argv list (`["git","push"]`)
 | Grok session dir | directory containing `chat_history.jsonl` |
 | Claude Code JSONL | file whose events have `type` plus a `message` object |
 | Codex CLI JSONL | file whose events have `type` in `session_meta` / `response_item` / `event_msg` plus a `payload` object |
+| Cursor JSONL | top-level `role` plus `message.content` list (`~/.cursor/projects/**/agent-transcripts`) |
 | Generic JSONL | anything else with `role` / `type` |
 
 `--dump-trace` prints the normalized form (results truncated). Use that when

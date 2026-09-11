@@ -35,7 +35,9 @@ PYTHONPATH=. python3 -m hotwash path/to/session
 ## Use
 
 ```bash
-hotwash --list                          # Grok, Claude, Codex sessions, newest first
+hotwash --list                          # Grok, Claude, Codex, Cursor
+hotwash --list --rank                   # rank, error detectors, first prompt
+hotwash --coverage cases                # detectors with no case yet
 hotwash --latest                        # newest Grok, Claude, or Codex session
 hotwash ~/.grok/sessions/<ws>/<id>      # a Grok session directory
 hotwash ~/.claude/projects/<proj>/<id>.jsonl
@@ -81,6 +83,7 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `refused_action` | User said not to push or commit, and a successful git push or git commit still ran |
 | `commit_claim` | User asked to commit, or the assistant claimed a commit, and no successful `git commit` ran |
 | `refused_action` | User said not to push or commit, and the agent did it anyway |
+| `write_claim` | Assistant claimed it wrote/updated a file, and no successful write tool ran |
 | `secret_write` | Agent wrote a credential-shaped secret (token or private key) into a file |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |

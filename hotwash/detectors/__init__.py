@@ -15,6 +15,7 @@ from hotwash.detectors.tests_claim import run as tests_claim_run
 from hotwash.detectors.todos import run as todos_run
 from hotwash.detectors.tool_error import run as tool_error_run
 from hotwash.detectors.verify_http import run as verify_http_run
+from hotwash.detectors.write_claim import run as write_claim_run
 from hotwash.model import Finding, Trace
 
 Detector = Callable[[Trace], list[Finding]]
@@ -33,6 +34,7 @@ REGISTRY: dict[str, Detector] = {
     "todos": todos_run,
     "tool_error": tool_error_run,
     "verify_http": verify_http_run,
+    "write_claim": write_claim_run,
 }
 
 

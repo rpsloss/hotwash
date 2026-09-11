@@ -28,7 +28,7 @@ def _guess_kind(path: Path) -> str:
         return "generic"
     if path.is_file():
         kind = sniff_file(path)
-        if kind in {"claude", "codex"}:
+        if kind in {"claude", "codex", "cursor"}:
             return kind
         return "generic"
     name = path.name
