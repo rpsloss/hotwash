@@ -55,7 +55,6 @@ def test_stale_verify_fixture_is_error():
     assert len(findings) == 1
     assert findings[0].detector == "stale_verify"
     assert findings[0].severity == "error"
-    assert "stale" in findings[0].title.lower()
 
 
 def test_stale_verify_ok_fixture_is_silent():

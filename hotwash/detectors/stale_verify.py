@@ -46,7 +46,7 @@ def run(trace: Trace) -> list[Finding]:
 
     severity = "error" if claimed else "warn"
     title = (
-        "claimed live after changing the tree; last verify was earlier"
+        "claimed live after a stale verify; the tree changed later"
         if claimed
         else "ship was requested; last verify ran before the last change"
     )
