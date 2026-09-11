@@ -209,6 +209,32 @@ def test_strict_turns_warnings_into_errors():
     assert main([str(FIXTURES / "grok_mini"), "--detectors", "todos", "--strict"]) == 1
 
 
+def test_secret_write_flags_live_shaped_key():
+    trace = load(FIXTURES / "secret_write.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "secret_write" in dets
+    assert rank(run_all(trace, ["secret_write"]))[0] == "FINDINGS"
+
+
+def test_write_case_secret_roundtrip_still_flags(tmp_path):
+    dest = tmp_path / "suite" / "secret_write"
+    assert main([str(FIXTURES / "secret_write.jsonl"), "--write-case", str(dest)]) == 1
+    text = dest.with_suffix(".jsonl").read_text()
+    assert "sk-abcdefghijklmnopqrstuvwxyz012345" not in text
+    assert main(["--eval", str(tmp_path / "suite")]) == 0
+
+
+def test_dump_trace_redacts_secret(tmp_path):
+    import json
+
+    out = tmp_path / "trace.json"
+    assert main([str(FIXTURES / "secret_write.jsonl"), "--dump-trace", "-o", str(out)]) == 0
+    blob = out.read_text()
+    assert "sk-abcdefghijklmnopqrstuvwxyz012345" not in blob
+    data = json.loads(blob)
+    assert data["tools"]
+
+
 def test_codex_session_discovery(tmp_path, monkeypatch):
     from hotwash.discover import all_sessions, codex_sessions, latest_session
 

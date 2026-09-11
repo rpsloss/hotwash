@@ -11,7 +11,8 @@ from hotwash.case import eval_dir, render_eval, write_case
 from hotwash.detectors import REGISTRY, run_all
 from hotwash.discover import all_sessions, latest_session
 from hotwash.ingest import load
-from hotwash.report import render_md, render_text, to_json
+from hotwash.redact import redact_obj
+from hotwash.report import render_html, render_md, render_text, to_json
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -27,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Treat warnings as errors (exit 1 if any finding)",
     )
-    p.add_argument("--format", choices=["text", "md", "json"], default="text")
+    p.add_argument("--format", choices=["text", "md", "json", "html"], default="text")
     p.add_argument(
         "--dump-trace",
         action="store_true",
@@ -98,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     if args.dump_trace:
-        body = json.dumps(trace.to_dict(), indent=2) + "\n"
+        body = json.dumps(redact_obj(trace.to_dict()), indent=2) + "\n"
         if args.out:
             Path(args.out).write_text(body)
         else:
@@ -120,6 +121,8 @@ def main(argv: list[str] | None = None) -> int:
         body = json.dumps(to_json(trace, findings), indent=2) + "\n"
     elif args.format == "md":
         body = render_md(trace, findings)
+    elif args.format == "html":
+        body = render_html(trace, findings)
     else:
         body = render_text(trace, findings)
 

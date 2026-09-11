@@ -70,6 +70,11 @@ hotwash --eval cases
 `hotwash --eval` also prints which detectors fired and which never fired in
 the suite.
 
+`--write-case` and `--dump-trace` redact credential-shaped tokens, PEM bodies,
+and known env-key values. Key names and paths stay. Placeholder values such as
+`your-key-here` are left alone. Token stand-ins keep `secret_write` firing so a
+frozen case still pins the detector.
+
 ## Adding an ingest
 
 1. Parse vendor log into `Message` and `ToolCall`.

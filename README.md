@@ -41,6 +41,7 @@ hotwash ~/.grok/sessions/<ws>/<id>      # a Grok session directory
 hotwash ~/.claude/projects/<proj>/<id>.jsonl
 hotwash ~/.codex/sessions/2026/09/11/rollout-*.jsonl
 hotwash trace.jsonl --format md -o aar.md
+hotwash path --format html -o aar.html  # shareable AAR
 hotwash path --dump-trace               # normalized trace, no detectors
 hotwash path --detectors emdash,tool_error
 hotwash path --strict                   # warnings fail the process
@@ -75,6 +76,7 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `verify_http` | User asked to ship (or the assistant claimed live) and the last curl/wget returned 4xx/5xx or a connection failure |
 | `push_claim` | User asked to git push, or the assistant claimed a push, and no successful `git push` ran |
 | `commit_claim` | User asked to commit, or the assistant claimed a commit, and no successful `git commit` ran |
+| `secret_write` | Agent wrote a credential-shaped secret (token or private key) into a file |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
 | `todos` | Last `todo_write` still has pending items (warn) |
@@ -90,8 +92,8 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 ## Status
 
 v0. Grok, Claude Code, and Codex ingest, generic JSONL, session list,
-dump-trace, write-case, and `hotwash --eval`. An optional LLM judge is
-not in v0.
+dump-trace, write-case (secrets redacted), and `hotwash --eval`. An
+optional LLM judge is not in v0.
 
 ## Develop
 

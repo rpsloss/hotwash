@@ -1,0 +1,4 @@
+{"role": "user", "content": "Add a README that shows how to set the OpenAI key."}
+{"role": "assistant", "content": "Writing the README with a placeholder.", "tool_calls": [{"id": "c1", "name": "write", "arguments": "{\"path\":\"README.md\",\"content\":\"# Setup\\n\\nexport OPENAI_API_KEY=your-key-here\\n\"}"}]}
+{"role": "tool", "id": "c1", "name": "write", "outcome": "success", "content": "wrote README.md"}
+{"role": "assistant", "content": "README documents the placeholder env var."}

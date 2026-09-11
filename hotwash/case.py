@@ -6,6 +6,7 @@ from pathlib import Path
 from hotwash.detectors import REGISTRY, run_all
 from hotwash.ingest import load
 from hotwash.model import Finding, Trace
+from hotwash.redact import REDACTED, redact
 from hotwash.report import rank
 
 
@@ -15,6 +16,10 @@ def _clip(text: str, limit: int) -> str:
     return text[:limit] + "...[truncated]"
 
 
+def _field(text: str, limit: int) -> str:
+    return _clip(redact(text or ""), limit)
+
+
 def trace_to_jsonl(trace: Trace, result_limit: int = 4000) -> str:
     """Vendor-neutral JSONL. Detectors can load this without Grok or Claude."""
     lines: list[str] = []
@@ -22,13 +27,13 @@ def trace_to_jsonl(trace: Trace, result_limit: int = 4000) -> str:
     for msg in trace.messages:
         if msg.role == "system":
             continue
-        row: dict = {"role": msg.role, "content": _clip(msg.content, result_limit)}
+        row: dict = {"role": msg.role, "content": _field(msg.content, result_limit)}
         if msg.tool_calls:
             row["tool_calls"] = [
                 {
                     "id": t.id,
                     "name": t.name,
-                    "arguments": _clip(t.arguments, result_limit),
+                    "arguments": _field(t.arguments, result_limit),
                 }
                 for t in msg.tool_calls
             ]
@@ -42,7 +47,7 @@ def trace_to_jsonl(trace: Trace, result_limit: int = 4000) -> str:
                             "id": t.id,
                             "name": t.name,
                             "outcome": t.outcome,
-                            "content": _clip(t.result, result_limit),
+                            "content": _field(t.result, result_limit),
                         },
                         ensure_ascii=False,
                     )
@@ -58,8 +63,8 @@ def trace_to_jsonl(trace: Trace, result_limit: int = 4000) -> str:
                     "id": t.id,
                     "name": t.name,
                     "outcome": t.outcome,
-                    "content": _clip(t.result, result_limit),
-                    "arguments": _clip(t.arguments, result_limit),
+                    "content": _field(t.result, result_limit),
+                    "arguments": _field(t.arguments, result_limit),
                 },
                 ensure_ascii=False,
             )

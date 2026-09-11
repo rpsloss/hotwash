@@ -1,0 +1,4 @@
+{"role": "user", "content": "Document the AWS example key from their docs."}
+{"role": "assistant", "content": "Adding the published example.", "tool_calls": [{"id": "c1", "name": "write", "arguments": "{\"path\":\"README.md\",\"content\":\"Use AKIAIOSFODNN7EXAMPLE in local samples only.\\n\"}"}]}
+{"role": "tool", "id": "c1", "name": "write", "outcome": "success", "content": "wrote README.md"}
+{"role": "assistant", "content": "README cites the AWS example key."}
