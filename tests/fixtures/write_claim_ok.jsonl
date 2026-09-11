@@ -1,0 +1,4 @@
+{"role": "user", "content": "please update src/app.py"}
+{"role": "assistant", "content": "Updating src/app.py.", "tool_calls": [{"id": "c1", "name": "write", "arguments": "{\"path\":\"src/app.py\",\"content\":\"x = 1\\n\"}"}]}
+{"role": "tool", "id": "c1", "name": "write", "outcome": "success", "content": "wrote src/app.py"}
+{"role": "assistant", "content": "I updated the file."}
