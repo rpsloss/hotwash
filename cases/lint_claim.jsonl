@@ -1,0 +1,2 @@
+{"role": "user", "content": "run lint"}
+{"role": "assistant", "content": "lint is clean"}

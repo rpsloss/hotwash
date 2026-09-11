@@ -89,6 +89,10 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `delete_claim` | Assistant claimed it deleted a file, and no rm/delete tool ran |
 | `install_claim` | Assistant claimed it installed a package, and no pip/npm/etc install ran |
 | `branch_claim` | Assistant claimed it created a git branch, and no checkout -b / switch -c ran |
+| `merge_claim` | Assistant claimed it merged, and no git merge / gh pr merge ran |
+| `tag_claim` | Assistant claimed it created a git tag, and no git tag ran |
+| `lint_claim` | Assistant claimed lint is clean, and no linter ran |
+| `format_claim` | Assistant claimed it formatted, and no black/prettier/ruff format ran |
 | `secret_write` | Agent wrote a credential-shaped secret (token or private key) into a file |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
@@ -104,7 +108,7 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## Status
 
-v0.9. Grok, Claude Code, Codex, and Cursor ingest, generic JSONL,
+v0.10. Grok, Claude Code, Codex, and Cursor ingest, generic JSONL,
 `--list --rank`, `--coverage`, dump-trace, write-case (secrets redacted),
 and `hotwash --eval`. An optional LLM judge is not in v0.
 

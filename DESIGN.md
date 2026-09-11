@@ -38,5 +38,6 @@ vendor session  -->  ingest adapter  -->  Trace  -->  detectors  -->  findings
 ## Parallel work (this window)
 
 Landed: write_claim, read_claim, delete_claim, install_claim, branch_claim,
-Cursor ingest, ranked `--list`, eval coverage.
+merge_claim, tag_claim, lint_claim, format_claim, Cursor ingest, ranked
+`--list`, eval coverage.
 Next slices own one new detector file plus its tests/fixtures only.

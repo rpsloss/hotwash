@@ -6,8 +6,11 @@ from hotwash.detectors.branch_claim import run as branch_claim_run
 from hotwash.detectors.commit_claim import run as commit_claim_run
 from hotwash.detectors.delete_claim import run as delete_claim_run
 from hotwash.detectors.emdash import run as emdash_run
+from hotwash.detectors.format_claim import run as format_claim_run
 from hotwash.detectors.git_identity import run as git_identity_run
 from hotwash.detectors.install_claim import run as install_claim_run
+from hotwash.detectors.lint_claim import run as lint_claim_run
+from hotwash.detectors.merge_claim import run as merge_claim_run
 from hotwash.detectors.pr_claim import run as pr_claim_run
 from hotwash.detectors.push_claim import run as push_claim_run
 from hotwash.detectors.read_claim import run as read_claim_run
@@ -15,6 +18,7 @@ from hotwash.detectors.refused_action import run as refused_action_run
 from hotwash.detectors.secret_write import run as secret_write_run
 from hotwash.detectors.ship_claim import run as ship_claim_run
 from hotwash.detectors.stale_verify import run as stale_verify_run
+from hotwash.detectors.tag_claim import run as tag_claim_run
 from hotwash.detectors.tests_claim import run as tests_claim_run
 from hotwash.detectors.todos import run as todos_run
 from hotwash.detectors.tool_error import run as tool_error_run
@@ -29,8 +33,11 @@ REGISTRY: dict[str, Detector] = {
     "commit_claim": commit_claim_run,
     "delete_claim": delete_claim_run,
     "emdash": emdash_run,
+    "format_claim": format_claim_run,
     "git_identity": git_identity_run,
     "install_claim": install_claim_run,
+    "lint_claim": lint_claim_run,
+    "merge_claim": merge_claim_run,
     "pr_claim": pr_claim_run,
     "push_claim": push_claim_run,
     "read_claim": read_claim_run,
@@ -38,6 +45,7 @@ REGISTRY: dict[str, Detector] = {
     "secret_write": secret_write_run,
     "ship_claim": ship_claim_run,
     "stale_verify": stale_verify_run,
+    "tag_claim": tag_claim_run,
     "tests_claim": tests_claim_run,
     "todos": todos_run,
     "tool_error": tool_error_run,
