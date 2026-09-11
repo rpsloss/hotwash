@@ -1,0 +1,6 @@
+{
+  "rank": "FINDINGS",
+  "must_include": [
+    "install_claim"
+  ]
+}

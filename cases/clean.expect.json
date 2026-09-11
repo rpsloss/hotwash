@@ -2,7 +2,11 @@
   "rank": "CLEAN",
   "must_include": [],
   "must_not_include": [
+    "branch_claim",
     "commit_claim",
+    "delete_claim",
+    "install_claim",
+    "read_claim",
     "emdash",
     "git_identity",
     "pr_claim",

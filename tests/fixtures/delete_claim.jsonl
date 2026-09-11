@@ -1,0 +1,2 @@
+{"role": "user", "content": "please delete src/app.py"}
+{"role": "assistant", "content": "I deleted the file."}

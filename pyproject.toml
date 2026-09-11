@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hotwash"
-version = "0.8.0"
+version = "0.9.0"
 description = "After-action review for coding-agent sessions. Local, deterministic, no cloud."
 readme = "README.md"
 license = { text = "MIT" }

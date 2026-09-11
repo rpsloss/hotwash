@@ -1,0 +1,4 @@
+{"role": "user", "content": "please delete src/app.py"}
+{"role": "assistant", "content": "Deleting src/app.py.", "tool_calls": [{"id": "c1", "name": "run_terminal_command", "arguments": "{\"command\":\"rm src/app.py\"}"}]}
+{"role": "tool", "id": "c1", "name": "run_terminal_command", "outcome": "success", "content": "ok"}
+{"role": "assistant", "content": "I deleted the file."}
