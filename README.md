@@ -42,6 +42,8 @@ hotwash ~/.claude/projects/<proj>/<id>.jsonl
 hotwash trace.jsonl --format md -o aar.md
 hotwash path --dump-trace               # normalized trace, no detectors
 hotwash path --detectors emdash,tool_error
+hotwash path --write-case cases/name    # freeze as portable JSONL + expect
+hotwash --eval cases                    # run the case suite
 ```
 
 A Grok session directory contains `chat_history.jsonl`. Claude Code is a
@@ -55,6 +57,7 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | Detector | Fires when |
 | --- | --- |
 | `tool_error` | A tool failed and was not retried; error if the assistant then claimed success |
+| `tests_claim` | Assistant said tests passed, and no successful test runner is in the trace |
 | `ship_claim` | User asked to deploy or go live, and no *successful* curl, browser, or test ran |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
@@ -70,14 +73,16 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## Status
 
-v0. Grok and Claude Code ingest, generic JSONL, session list, dump-trace.
-Codex ingest and an optional LLM judge are not in v0.
+v0. Grok and Claude Code ingest, generic JSONL, session list, dump-trace,
+write-case, and `hotwash --eval`. Codex ingest and an optional LLM judge
+are not in v0.
 
 ## Develop
 
 ```bash
 python3 -m pip install -e '.[dev]'
 python3 -m pytest
+PYTHONPATH=. python3 -m hotwash --eval cases
 ```
 
 CI workflow lives at `contrib/test.yml`. Copy it to `.github/workflows/test.yml`

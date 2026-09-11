@@ -1,0 +1,7 @@
+{
+  "rank": "FINDINGS",
+  "must_include": [
+    "ship_claim",
+    "tool_error"
+  ]
+}

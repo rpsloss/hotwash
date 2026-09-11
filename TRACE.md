@@ -34,6 +34,34 @@ Tool result:
 adding an adapter: dump, then write a detector against the dump, not the
 vendor file.
 
+## Eval cases
+
+A case is two files with the same stem:
+
+```
+cases/tool_fail.jsonl
+cases/tool_fail.expect.json
+```
+
+`expect.json`:
+
+```json
+{
+  "rank": "FINDINGS",
+  "must_include": ["tool_error", "tests_claim"],
+  "must_not_include": []
+}
+```
+
+Freeze a real session (writes portable JSONL, not the vendor log):
+
+```bash
+hotwash ~/.grok/sessions/<id> --write-case cases/ship-without-curl
+hotwash --eval cases
+```
+
+`must_include` is the regression pin. If a detector stops firing, the case fails.
+
 ## Adding an ingest
 
 1. Parse vendor log into `Message` and `ToolCall`.

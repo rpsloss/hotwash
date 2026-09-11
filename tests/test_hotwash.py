@@ -112,3 +112,28 @@ def test_dump_trace_cli(tmp_path):
     data = __import__("json").loads(out.read_text())
     assert "messages" in data
     assert "tools" in data
+
+
+def test_tests_claim_fires_when_pytest_failed():
+    trace = load(FIXTURES / "tool_fail.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "tests_claim" in dets
+
+
+def test_write_case_and_eval_roundtrip(tmp_path):
+    dest = tmp_path / "suite" / "tool_fail"
+    code = main([str(FIXTURES / "tool_fail.jsonl"), "--write-case", str(dest)])
+    assert code == 1  # source session is dirty
+    assert dest.with_suffix(".jsonl").exists()
+    assert Path(str(dest) + ".expect.json").exists()
+    # clean case in the same suite
+    dest2 = tmp_path / "suite" / "clean"
+    assert main([str(FIXTURES / "clean.jsonl"), "--write-case", str(dest2)]) == 0
+    assert main(["--eval", str(tmp_path / "suite")]) == 0
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_public_case_corpus():
+    assert main(["--eval", str(ROOT / "cases")]) == 0

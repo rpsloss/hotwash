@@ -1,0 +1,9 @@
+{
+  "rank": "FINDINGS",
+  "must_include": [
+    "emdash",
+    "git_identity",
+    "ship_claim",
+    "todos"
+  ]
+}

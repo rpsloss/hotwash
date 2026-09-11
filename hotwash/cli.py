@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 from hotwash import __version__
+from hotwash.case import eval_dir, render_eval, write_case
 from hotwash.detectors import REGISTRY, run_all
 from hotwash.discover import all_sessions, grok_sessions, latest_grok_session
 from hotwash.ingest import load
@@ -27,6 +28,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Print the normalized trace JSON instead of running detectors",
     )
+    p.add_argument(
+        "--eval",
+        dest="eval_dir",
+        metavar="DIR",
+        help="Run the portable case suite in DIR (*.jsonl + *.expect.json)",
+    )
+    p.add_argument(
+        "--write-case",
+        metavar="STEM",
+        help="Freeze this session as STEM.jsonl + STEM.expect.json",
+    )
     p.add_argument("-o", "--out", help="Write the report to this file")
     p.add_argument(
         "--detectors",
@@ -37,6 +49,15 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.list_sessions:
         return _list()
+
+    if args.eval_dir:
+        try:
+            rows = eval_dir(Path(args.eval_dir))
+        except (FileNotFoundError, ValueError) as e:
+            print(f"hotwash: {e}", file=sys.stderr)
+            return 2
+        sys.stdout.write(render_eval(rows))
+        return 0 if all(r["ok"] for r in rows) else 1
 
     path = args.path
     if args.latest:
@@ -73,6 +94,11 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as e:
         print(f"hotwash: {e}", file=sys.stderr)
         return 2
+
+    if args.write_case:
+        jsonl, expect = write_case(trace, findings, Path(args.write_case))
+        print(f"wrote {jsonl}", file=sys.stderr)
+        print(f"wrote {expect}", file=sys.stderr)
 
     if args.format == "json":
         body = json.dumps(to_json(trace, findings), indent=2) + "\n"
