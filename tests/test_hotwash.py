@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from hotwash.cli import main
@@ -137,3 +138,25 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_public_case_corpus():
     assert main(["--eval", str(ROOT / "cases")]) == 0
+
+
+def test_stdin_and_eval_json(monkeypatch):
+    import io
+    import json
+
+    payload = (FIXTURES / "clean.jsonl").read_text()
+    monkeypatch.setattr(sys, "stdin", io.StringIO(payload))
+    assert main(["-"]) == 0
+    # json eval of the public corpus
+    import hotwash.cli as cli
+
+    old = sys.stdout
+    buf = io.StringIO()
+    sys.stdout = buf
+    try:
+        code = main(["--eval", str(ROOT / "cases"), "--format", "json"])
+    finally:
+        sys.stdout = old
+    assert code == 0
+    rows = json.loads(buf.getvalue())
+    assert {r["name"] for r in rows} >= {"clean", "tool_fail"}

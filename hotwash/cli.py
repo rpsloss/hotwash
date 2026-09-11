@@ -56,7 +56,10 @@ def main(argv: list[str] | None = None) -> int:
         except (FileNotFoundError, ValueError) as e:
             print(f"hotwash: {e}", file=sys.stderr)
             return 2
-        sys.stdout.write(render_eval(rows))
+        if args.format == "json":
+            sys.stdout.write(json.dumps(rows, indent=2) + "\n")
+        else:
+            sys.stdout.write(render_eval(rows))
         return 0 if all(r["ok"] for r in rows) else 1
 
     path = args.path
@@ -68,8 +71,16 @@ def main(argv: list[str] | None = None) -> int:
             return 2
     if not path:
         p.print_help()
-        print("\nTip: hotwash --list    or    hotwash --latest", file=sys.stderr)
+        print("\nTip: hotwash --list    or    hotwash --latest    or    hotwash --eval cases", file=sys.stderr)
         return 2
+
+    if path == "-":
+        import tempfile
+
+        raw = sys.stdin.read()
+        tmp = Path(tempfile.mkdtemp(prefix="hotwash-")) / "stdin.jsonl"
+        tmp.write_text(raw)
+        path = str(tmp)
 
     names = None
     if args.detectors:

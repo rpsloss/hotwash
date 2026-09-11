@@ -1,0 +1,17 @@
+name: hotwash
+description: After-action review for coding-agent traces. Run a portable case suite.
+author: rpsloss
+inputs:
+  path:
+    description: Directory of cases (*.jsonl + *.expect.json). Defaults to cases/ in the caller repo.
+    required: false
+    default: cases
+runs:
+  using: composite
+  steps:
+    - name: Install hotwash
+      shell: bash
+      run: python3 -m pip install -q "${{ github.action_path }}"
+    - name: Eval
+      shell: bash
+      run: python3 -m hotwash --eval "${{ inputs.path }}"

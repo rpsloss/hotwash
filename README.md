@@ -44,6 +44,15 @@ hotwash path --dump-trace               # normalized trace, no detectors
 hotwash path --detectors emdash,tool_error
 hotwash path --write-case cases/name    # freeze as portable JSONL + expect
 hotwash --eval cases                    # run the case suite
+cat trace.jsonl | hotwash -
+```
+
+GitHub Action (from another repo):
+
+```yaml
+- uses: rpsloss/hotwash@main
+  with:
+    path: cases
 ```
 
 A Grok session directory contains `chat_history.jsonl`. Claude Code is a
