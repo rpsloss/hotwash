@@ -7,7 +7,7 @@ def run(trace: Trace) -> list[Finding]:
     ...
 ```
 
-Register it in `hotwash/detectors/__init__.py`. Add a fixture under
+Register it in `hotwash/detectors/REGISTRY`. Add a fixture under
 `tests/fixtures/` and a case in `tests/test_hotwash.py`.
 
 Rules:

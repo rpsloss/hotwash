@@ -41,21 +41,8 @@ def run(trace: Trace) -> list[Finding]:
                 detector="emdash",
                 severity="error",
                 title=f"{kind} written into {path or tool.name}",
-                detail="User-facing copy with em/en dashes is a common agent tell. Use a period, comma, or colon.",
+                detail="Em/en dashes in written files are a common generated-text tell. Prefer a period, comma, or colon.",
                 evidence=(path or tool.name) + "\n" + _snip(blob),
-            )
-        )
-    # assistant prose is a weaker tell
-    for i, msg in enumerate(trace.messages):
-        if msg.role != "assistant" or EM not in msg.content:
-            continue
-        findings.append(
-            Finding(
-                detector="emdash",
-                severity="warn",
-                title=f"em-dash in assistant message #{i + 1}",
-                detail="Spoken copy on the site was the original complaint. Prose in the session still leaks the same mark.",
-                evidence=_snip(msg.content),
             )
         )
     return findings

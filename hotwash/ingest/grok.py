@@ -7,12 +7,21 @@ from typing import Any
 from hotwash.model import Message, ToolCall, Trace
 
 
-def _flatten_content(content: Any) -> str:
+def _user_query(text: str) -> str:
+    """Prefer the inner user_query block when the wrapper dump is present."""
+    start = text.find("<user_query>")
+    end = text.find("</user_query>")
+    if start != -1 and end > start:
+        return text[start + len("<user_query>") : end].strip()
+    return text
+
+
+def _flatten_content(content: Any, *, user: bool = False) -> str:
     if content is None:
         return ""
     if isinstance(content, str):
-        return content
-    if isinstance(content, list):
+        text = content
+    elif isinstance(content, list):
         parts: list[str] = []
         for item in content:
             if isinstance(item, str):
@@ -22,10 +31,12 @@ def _flatten_content(content: Any) -> str:
                     parts.append(str(item.get("text") or ""))
                 elif "text" in item:
                     parts.append(str(item["text"]))
-        return "\n".join(p for p in parts if p)
-    if isinstance(content, dict):
-        return str(content.get("text") or json.dumps(content))
-    return str(content)
+        text = "\n".join(p for p in parts if p)
+    elif isinstance(content, dict):
+        text = str(content.get("text") or json.dumps(content))
+    else:
+        text = str(content)
+    return _user_query(text) if user else text
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -68,7 +79,11 @@ def load_grok(session_dir: str | Path) -> Trace:
         kind = row.get("type")
         if kind == "user":
             messages.append(
-                Message(role="user", content=_flatten_content(row.get("content")), ts=str(row.get("ts") or ""))
+                Message(
+                    role="user",
+                    content=_flatten_content(row.get("content"), user=True),
+                    ts=str(row.get("ts") or ""),
+                )
             )
         elif kind == "assistant":
             calls: list[ToolCall] = []

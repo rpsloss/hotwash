@@ -13,7 +13,7 @@ The session file already knows whether that is true. Hotwash reads the
 trace and reports where the claim and the tools disagree.
 
 This is the gap between "we ran an agent" and "we can improve the next one."
-Evals that need a fresh Docker run are useful. Scoring the session you
+Evals that re-run the agent in Docker are useful. Scoring the session you
 already paid for is the missing loop.
 
 ## Install
@@ -34,43 +34,41 @@ PYTHONPATH=. python3 -m hotwash path/to/session
 
 ## Use
 
-Grok Build / Grok CLI session directory (has `chat_history.jsonl`):
-
 ```bash
-hotwash ~/.grok/sessions/<workspace>/<session-id>
-```
-
-Generic JSONL (one event per line):
-
-```bash
+hotwash --list                          # Grok sessions, newest first
+hotwash --latest                        # review the newest one
+hotwash ~/.grok/sessions/<ws>/<id>      # review a specific Grok session
 hotwash trace.jsonl --format md -o aar.md
 hotwash trace.jsonl --format json
+hotwash path --detectors emdash,git_identity
 ```
+
+A Grok session directory is one that contains `chat_history.jsonl`.
+Generic JSONL is one event per line (`role` / `type`, optional `tool_calls`).
 
 Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 
 ## Detectors (v0)
 
-| Detector | Error when |
+| Detector | Fires when |
 | --- | --- |
-| `emdash` | Agent wrote an em dash into a file |
-| `git_identity` | `git commit` used a machine-local email (`user@Mac.lan`) GitHub cannot map |
-| `ship_claim` | User asked to deploy / go live, and the trace has no curl, browser, or test |
+| `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
+| `git_identity` | `git commit` used a machine-local email GitHub cannot map |
+| `ship_claim` | User asked to deploy or go live, and the trace has no curl, browser, or test |
 | `todos` | Last `todo_write` still has pending items (warn) |
 
-Each detector is a function `Trace -> list[Finding]`. Add one, add a test.
+Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## What this is not
 
 - Not an agent harness. It does not run the agent.
-- Not LangSmith. Nothing leaves the machine.
-- Not a C3PAO, not an authorizing official, and not a model eval leaderboard.
+- Not a cloud trace product. Nothing leaves the machine.
+- Not a model leaderboard.
 
 ## Status
 
-v0.1. Grok session ingest is real (this repo was dogfooded on a Grok Build
-session). Generic JSONL is the interchange format. Claude Code / Codex
-ingest and an optional SpaceXAI judge are next, not pretend-done.
+v0. Grok session ingest and generic JSONL work. Session discovery works.
+Claude Code / Codex ingest and an optional LLM judge are not in v0.
 
 ## Develop
 
@@ -79,7 +77,8 @@ python3 -m pip install -e '.[dev]'
 python3 -m pytest
 ```
 
-CI workflow lives at `contrib/test.yml`. Copy it to `.github/workflows/test.yml` if the GitHub token has `workflow` scope.
+CI workflow lives at `contrib/test.yml`. Copy it to `.github/workflows/test.yml`
+if the GitHub token has `workflow` scope.
 
 ## License
 

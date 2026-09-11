@@ -5,11 +5,11 @@ import re
 from hotwash.model import Finding, Trace
 
 SHIP_ASK = re.compile(
-    r"\b(vercel|deploy|production|live site|push to git|update the (site|page)|profile pic|about page)\b",
+    r"\b(deploy|production|vercel|push to git|go live|make it live)\b",
     re.I,
 )
 SHIP_CLAIM = re.compile(
-    r"\b(it'?s live|is live|now live|deploy succeeded|production (is|has)|verified (the )?(live|production)|you can check now|hard-refresh)\b",
+    r"\b(it'?s live|is live|now live|deploy succeeded|pushed to (main|production)|verified (the )?(live|production)|you can check now)\b",
     re.I,
 )
 VERIFY_HINT = re.compile(
@@ -43,7 +43,7 @@ def run(trace: Trace) -> list[Finding]:
                 detector="ship_claim",
                 severity="error",
                 title="claimed a live ship without a verify tool",
-                detail="User asked to deploy. Assistant said it was live. Trace has no curl, browser, or test against the result.",
+                detail="The user asked to ship or verify. The assistant claimed it was done. The trace has no curl, browser, or test against the result.",
                 evidence=claim_snip.strip(),
             )
         )
@@ -53,7 +53,7 @@ def run(trace: Trace) -> list[Finding]:
                 detector="ship_claim",
                 severity="warn",
                 title="ship was requested; no verify tool in the trace",
-                detail="A deploy or site change was asked for. The session never curled, browsed, or tested the result.",
+                detail="A deploy, push, or live check was asked for. The session never curled, browsed, or tested the result.",
                 evidence="user asked: " + _first_user(trace)[:240],
             )
         )

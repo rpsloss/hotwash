@@ -56,3 +56,31 @@ def test_git_log_of_old_mac_lan_is_not_a_finding():
 
     trace = load_generic(FIXTURES / "git_log.jsonl")
     assert git_run(trace) == []
+
+
+def test_grok_ingest_strips_user_query_wrapper():
+    trace = load(FIXTURES / "grok_wrapped")
+    users = [m.content for m in trace.messages if m.role == "user"]
+    assert users == ["please deploy this to production"]
+    findings = run_all(trace)
+    assert any(f.detector == "ship_claim" for f in findings)
+
+
+def test_cli_list_and_unknown_detector(tmp_path):
+    from hotwash.discover import grok_sessions, latest_grok_session
+
+    root = tmp_path / "sessions" / "ws" / "abc"
+    root.mkdir(parents=True)
+    (root / "chat_history.jsonl").write_text("{}\n")
+    found = grok_sessions(tmp_path / "sessions")
+    assert found == [root]
+    assert latest_grok_session(tmp_path / "sessions") == root
+
+    code = main([str(FIXTURES / "clean.jsonl"), "--detectors", "not_a_detector"])
+    assert code == 2
+
+
+def test_cli_detectors_filter():
+    code = main([str(FIXTURES / "grok_mini"), "--detectors", "todos"])
+    # todos is warn-only on the dirty fixture, so exit 0
+    assert code == 0

@@ -27,7 +27,7 @@ def run(trace: Trace) -> list[Finding]:
                     detector="git_identity",
                     severity="error",
                     title="git commit used a machine-local identity",
-                    detail="GitHub cannot map this author. Vercel Hobby deploys from private repos will be blocked until the author is a verified GitHub user.",
+                    detail="GitHub cannot map machine-local emails (user@Mac.lan, user@host.local) to an account. Downstream Git-backed deploys then fail author checks.",
                     evidence=_snip(cmd + "\n" + tool.result),
                 )
             )
@@ -37,7 +37,7 @@ def run(trace: Trace) -> list[Finding]:
                     detector="git_identity",
                     severity="warn",
                     title="git commit did not set a GitHub-mapped author",
-                    detail="Pass -c user.email='ID+login@users.noreply.github.com' on the commit so Vercel can verify the author.",
+                    detail="Pass -c user.email='ID+login@users.noreply.github.com' on the commit so GitHub can attribute it.",
                     evidence=_snip(cmd),
                 )
             )
