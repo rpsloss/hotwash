@@ -4,6 +4,7 @@ from pathlib import Path
 
 from hotwash.ingest.claude import load_claude
 from hotwash.ingest.codex import load_codex
+from hotwash.ingest.cursor import load_cursor
 from hotwash.ingest.generic import load_generic
 from hotwash.ingest.grok import load_grok
 from hotwash.ingest.sniff import sniff_file
@@ -32,6 +33,8 @@ def load(path: str | Path) -> Trace:
     kind = sniff_file(p)
     if kind == "claude":
         return load_claude(p)
+    if kind == "cursor":
+        return load_cursor(p)
     if kind == "codex":
         return load_codex(p)
     return load_generic(p)
