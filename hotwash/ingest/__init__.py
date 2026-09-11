@@ -1,0 +1,27 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from hotwash.ingest.generic import load_generic
+from hotwash.ingest.grok import load_grok
+from hotwash.model import Trace
+
+
+def load(path: str | Path) -> Trace:
+    p = Path(path).expanduser().resolve()
+    if not p.exists():
+        raise FileNotFoundError(p)
+    if p.is_dir():
+        if (p / "chat_history.jsonl").exists() or (p / "events.jsonl").exists():
+            return load_grok(p)
+        # nested grok session dir
+        kids = [c for c in p.iterdir() if c.is_dir() and (c / "chat_history.jsonl").exists()]
+        if len(kids) == 1:
+            return load_grok(kids[0])
+        if kids:
+            raise ValueError(
+                f"{p} has {len(kids)} session dirs. Pass one of them:\n"
+                + "\n".join(f"  {c}" for c in kids)
+            )
+        raise ValueError(f"No chat_history.jsonl under {p}")
+    return load_generic(p)

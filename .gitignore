@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.DS_Store
+.pytest_cache/
+.mypy_cache/
+*.jsonl.lock
+.env
+.env.*
+!.env.example
+aar.md
+aar.json

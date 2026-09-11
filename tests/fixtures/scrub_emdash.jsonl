@@ -1,0 +1,1 @@
+{"role":"assistant","content":"Scrubbing em-dashes.","tool_calls":[{"id":"c1","name":"search_replace","arguments":"{\"file_path\":\"README.md\",\"old_string\":\"Castleridge — CMMC\",\"new_string\":\"Castleridge: CMMC\"}"}]}
