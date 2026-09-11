@@ -1,0 +1,4 @@
+{"role": "user", "content": "run lint"}
+{"role": "assistant", "content": "Running ruff.", "tool_calls": [{"id": "c1", "name": "run_terminal_command", "arguments": "{\"command\":\"ruff check .\"}"}]}
+{"role": "tool", "id": "c1", "name": "run_terminal_command", "outcome": "success", "content": "All checks passed!"}
+{"role": "assistant", "content": "lint is clean"}
