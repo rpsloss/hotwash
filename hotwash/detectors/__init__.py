@@ -4,6 +4,7 @@ from collections.abc import Callable, Iterable
 
 from hotwash.detectors.emdash import run as emdash_run
 from hotwash.detectors.git_identity import run as git_identity_run
+from hotwash.detectors.push_claim import run as push_claim_run
 from hotwash.detectors.ship_claim import run as ship_claim_run
 from hotwash.detectors.tests_claim import run as tests_claim_run
 from hotwash.detectors.todos import run as todos_run
@@ -15,6 +16,7 @@ Detector = Callable[[Trace], list[Finding]]
 REGISTRY: dict[str, Detector] = {
     "emdash": emdash_run,
     "git_identity": git_identity_run,
+    "push_claim": push_claim_run,
     "ship_claim": ship_claim_run,
     "tests_claim": tests_claim_run,
     "todos": todos_run,

@@ -28,6 +28,13 @@ def latest_grok_session(root: Path | None = None) -> Path:
     return sessions[0]
 
 
+def latest_session() -> Path:
+    rows = all_sessions()
+    if not rows:
+        raise FileNotFoundError("No Grok or Claude sessions found")
+    return rows[0][1]
+
+
 def default_claude_root() -> Path:
     return Path.home() / ".claude" / "projects"
 

@@ -140,6 +140,13 @@ def test_public_case_corpus():
     assert main(["--eval", str(ROOT / "cases")]) == 0
 
 
+def test_push_claim_without_git_push():
+    trace = load(FIXTURES / "push_fail.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "push_claim" in dets
+    assert rank(run_all(trace, ["push_claim"]))[0] == "FINDINGS"
+
+
 def test_stdin_and_eval_json(monkeypatch):
     import io
     import json

@@ -9,17 +9,28 @@ from hotwash.model import Finding, Trace
 from hotwash.report import rank
 
 
-def trace_to_jsonl(trace: Trace) -> str:
+def _clip(text: str, limit: int) -> str:
+    if limit <= 0 or len(text) <= limit:
+        return text
+    return text[:limit] + "...[truncated]"
+
+
+def trace_to_jsonl(trace: Trace, result_limit: int = 4000) -> str:
     """Vendor-neutral JSONL. Detectors can load this without Grok or Claude."""
     lines: list[str] = []
     seen: set[str] = set()
     for msg in trace.messages:
         if msg.role == "system":
             continue
-        row: dict = {"role": msg.role, "content": msg.content}
+        row: dict = {"role": msg.role, "content": _clip(msg.content, result_limit)}
         if msg.tool_calls:
             row["tool_calls"] = [
-                {"id": t.id, "name": t.name, "arguments": t.arguments} for t in msg.tool_calls
+                {
+                    "id": t.id,
+                    "name": t.name,
+                    "arguments": _clip(t.arguments, result_limit),
+                }
+                for t in msg.tool_calls
             ]
         lines.append(json.dumps(row, ensure_ascii=False))
         for t in msg.tool_calls:
@@ -31,7 +42,7 @@ def trace_to_jsonl(trace: Trace) -> str:
                             "id": t.id,
                             "name": t.name,
                             "outcome": t.outcome,
-                            "content": t.result,
+                            "content": _clip(t.result, result_limit),
                         },
                         ensure_ascii=False,
                     )
@@ -47,8 +58,8 @@ def trace_to_jsonl(trace: Trace) -> str:
                     "id": t.id,
                     "name": t.name,
                     "outcome": t.outcome,
-                    "content": t.result,
-                    "arguments": t.arguments,
+                    "content": _clip(t.result, result_limit),
+                    "arguments": _clip(t.arguments, result_limit),
                 },
                 ensure_ascii=False,
             )

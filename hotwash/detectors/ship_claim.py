@@ -6,7 +6,7 @@ from hotwash.detectors.tool_error import _failed
 from hotwash.model import Finding, Trace
 
 SHIP_ASK = re.compile(
-    r"\b(deploy|production|vercel|push to git|go live|make it live)\b",
+    r"\b(deploy|production|vercel|go live|make it live)\b",
     re.I,
 )
 SHIP_CLAIM = re.compile(

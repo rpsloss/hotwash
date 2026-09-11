@@ -36,7 +36,7 @@ PYTHONPATH=. python3 -m hotwash path/to/session
 
 ```bash
 hotwash --list                          # Grok and Claude sessions, newest first
-hotwash --latest                        # review the newest Grok session
+hotwash --latest                        # newest Grok or Claude session
 hotwash ~/.grok/sessions/<ws>/<id>      # a Grok session directory
 hotwash ~/.claude/projects/<proj>/<id>.jsonl
 hotwash trace.jsonl --format md -o aar.md
@@ -68,6 +68,7 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | `tool_error` | A tool failed and was not retried; error if the assistant then claimed success |
 | `tests_claim` | Assistant said tests passed, and no successful test runner is in the trace |
 | `ship_claim` | User asked to deploy or go live, and no *successful* curl, browser, or test ran |
+| `push_claim` | User asked to git push, or the assistant claimed a push, and no successful `git push` ran |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
 | `todos` | Last `todo_write` still has pending items (warn) |

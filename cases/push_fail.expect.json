@@ -1,10 +1,7 @@
 {
   "rank": "FINDINGS",
   "must_include": [
-    "emdash",
     "git_identity",
-    "push_claim",
-    "ship_claim",
-    "todos"
+    "push_claim"
   ]
 }

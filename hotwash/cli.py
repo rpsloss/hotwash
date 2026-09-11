@@ -9,7 +9,7 @@ from pathlib import Path
 from hotwash import __version__
 from hotwash.case import eval_dir, render_eval, write_case
 from hotwash.detectors import REGISTRY, run_all
-from hotwash.discover import all_sessions, grok_sessions, latest_grok_session
+from hotwash.discover import all_sessions, grok_sessions, latest_session
 from hotwash.ingest import load
 from hotwash.report import render_md, render_text, to_json
 
@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
         description="After-action review for a coding-agent session. Local, no cloud.",
     )
     p.add_argument("path", nargs="?", help="Grok session directory or JSONL trace")
-    p.add_argument("--latest", action="store_true", help="Review the newest Grok session")
+    p.add_argument("--latest", action="store_true", help="Review the newest Grok or Claude session")
     p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok and Claude sessions, newest first")
     p.add_argument("--format", choices=["text", "md", "json"], default="text")
     p.add_argument(
@@ -65,7 +65,7 @@ def main(argv: list[str] | None = None) -> int:
     path = args.path
     if args.latest:
         try:
-            path = str(latest_grok_session())
+            path = str(latest_session())
         except FileNotFoundError as e:
             print(f"hotwash: {e}", file=sys.stderr)
             return 2
