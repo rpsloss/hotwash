@@ -8,7 +8,9 @@ def run(trace: Trace) -> list[Finding]:
 ```
 
 Register it in `hotwash/detectors/REGISTRY`. Add a fixture under
-`tests/fixtures/` and a case in `tests/test_hotwash.py`.
+`tests/fixtures/` and a case in `tests/test_hotwash.py`. Share command
+parsing and write-tool helpers from `hotwash/detectors/util.py` instead of
+matching one vendor's tool names.
 
 Rules:
 

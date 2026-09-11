@@ -19,7 +19,7 @@ def main(argv: list[str] | None = None) -> int:
         prog="hotwash",
         description="After-action review for a coding-agent session. Local, no cloud.",
     )
-    p.add_argument("path", nargs="?", help="Grok session directory or JSONL trace")
+    p.add_argument("path", nargs="?", help="Grok session dir, Claude/Codex JSONL, or generic trace")
     p.add_argument("--latest", action="store_true", help="Review the newest Grok, Claude, or Codex session")
     p.add_argument("--list", action="store_true", dest="list_sessions", help="List Grok, Claude, and Codex sessions, newest first")
     p.add_argument(

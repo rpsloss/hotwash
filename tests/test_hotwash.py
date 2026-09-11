@@ -167,3 +167,61 @@ def test_stdin_and_eval_json(monkeypatch):
     assert code == 0
     rows = json.loads(buf.getvalue())
     assert {r["name"] for r in rows} >= {"clean", "tool_fail"}
+
+
+def test_verify_http_404_is_not_live():
+    trace = load(FIXTURES / "http_fail.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "verify_http" in dets
+    assert "ship_claim" not in dets
+    assert rank(run_all(trace, ["verify_http"]))[0] == "FINDINGS"
+
+
+def test_commit_claim_without_git_commit():
+    trace = load(FIXTURES / "commit_fail.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "commit_claim" in dets
+    assert rank(run_all(trace, ["commit_claim"]))[0] == "FINDINGS"
+
+
+def test_codex_ingest_apply_patch_and_exit_code():
+    trace = load(FIXTURES / "codex_mini.jsonl")
+    assert trace.session_id == "codex-mini"
+    assert [t.name for t in trace.tools] == ["apply_patch", "shell"]
+    assert trace.tools[1].outcome == "error"
+    users = [m.content for m in trace.messages if m.role == "user"]
+    assert users == ["Fix the README typo and run the tests."]
+    dets = {f.detector for f in run_all(trace)}
+    assert "emdash" in dets
+    assert "tests_claim" in dets
+    assert "tool_error" in dets
+
+
+def test_shell_cmd_array_counts_as_git_push():
+    trace = load(FIXTURES / "cmd_array_push.jsonl")
+    dets = {f.detector for f in run_all(trace)}
+    assert "push_claim" not in dets
+
+
+def test_strict_turns_warnings_into_errors():
+    # todos is warn-only on the dirty grok fixture
+    assert main([str(FIXTURES / "grok_mini"), "--detectors", "todos"]) == 0
+    assert main([str(FIXTURES / "grok_mini"), "--detectors", "todos", "--strict"]) == 1
+
+
+def test_codex_session_discovery(tmp_path, monkeypatch):
+    from hotwash.discover import all_sessions, codex_sessions, latest_session
+
+    root = tmp_path / "codex" / "sessions" / "2026" / "09" / "11"
+    root.mkdir(parents=True)
+    rollout = root / "rollout-2026-09-11T00-00-00-codex-mini.jsonl"
+    rollout.write_text((FIXTURES / "codex_mini.jsonl").read_text())
+    found = codex_sessions(tmp_path / "codex" / "sessions")
+    assert found == [rollout]
+
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / "codex"))
+    monkeypatch.setattr("hotwash.discover.grok_sessions", lambda: [])
+    monkeypatch.setattr("hotwash.discover.claude_sessions", lambda: [])
+    rows = all_sessions()
+    assert rows[0][0] == "codex"
+    assert latest_session() == rollout

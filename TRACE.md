@@ -1,6 +1,6 @@
 # Trace format
 
-Detectors do not read Grok or Claude files. They read a `Trace`:
+Detectors do not read Grok, Claude, or Codex files. They read a `Trace`:
 messages and tool calls. Ingest adapters turn vendor logs into that shape.
 
 ## Generic JSONL (the interchange)
@@ -21,6 +21,7 @@ Tool result:
 ```
 
 `arguments` may be a JSON string or an object. `outcome` is `success` or `error`.
+Shell tools may pass `command` as a string or as an argv list (`["git","push"]`).
 
 ## Adapters
 
@@ -28,11 +29,16 @@ Tool result:
 | --- | --- |
 | Grok session dir | directory containing `chat_history.jsonl` |
 | Claude Code JSONL | file whose events have `type` plus a `message` object |
+| Codex CLI JSONL | file whose events have `type` in `session_meta` / `response_item` / `event_msg` plus a `payload` object |
 | Generic JSONL | anything else with `role` / `type` |
 
 `--dump-trace` prints the normalized form (results truncated). Use that when
 adding an adapter: dump, then write a detector against the dump, not the
 vendor file.
+
+Codex tool names (`shell`, `apply_patch`, `exec_command`) are first-class.
+`apply_patch` counts as a write. `Exit code: 1` in a tool result counts as
+failure, same as `exit: 1`.
 
 ## Eval cases
 
@@ -61,6 +67,8 @@ hotwash --eval cases
 ```
 
 `must_include` is the regression pin. If a detector stops firing, the case fails.
+`hotwash --eval` also prints which detectors fired and which never fired in
+the suite.
 
 ## Adding an ingest
 

@@ -1,0 +1,3 @@
+{"role": "user", "content": "fix the typo"}
+{"role": "assistant", "content": "Editing README.", "tool_calls": [{"id": "c1", "name": "apply_patch", "arguments": "*** Begin Patch\n*** Update File: README.md\n@@\n-hello\n+hello \u2014 world\n*** End Patch"}]}
+{"role": "tool", "id": "c1", "name": "apply_patch", "outcome": "success", "content": "updated README.md"}

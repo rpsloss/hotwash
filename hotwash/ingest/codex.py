@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
-from hotwash.detectors.util import EXIT_FAIL
 from hotwash.model import Message, ToolCall, Trace
+
+EXIT_FAIL = re.compile(
+    r"(?im)^(?:exit(?:\s+code)?|command exited with(?:\s+code)?):?\s*([1-9]\d*)"
+)
 
 
 def _flatten_content(content: Any) -> str:

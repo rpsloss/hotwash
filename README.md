@@ -35,13 +35,15 @@ PYTHONPATH=. python3 -m hotwash path/to/session
 ## Use
 
 ```bash
-hotwash --list                          # Grok and Claude sessions, newest first
-hotwash --latest                        # newest Grok or Claude session
+hotwash --list                          # Grok, Claude, Codex sessions, newest first
+hotwash --latest                        # newest Grok, Claude, or Codex session
 hotwash ~/.grok/sessions/<ws>/<id>      # a Grok session directory
 hotwash ~/.claude/projects/<proj>/<id>.jsonl
+hotwash ~/.codex/sessions/2026/09/11/rollout-*.jsonl
 hotwash trace.jsonl --format md -o aar.md
 hotwash path --dump-trace               # normalized trace, no detectors
 hotwash path --detectors emdash,tool_error
+hotwash path --strict                   # warnings fail the process
 hotwash path --write-case cases/name    # freeze as portable JSONL + expect
 hotwash --eval cases                    # run the case suite
 cat trace.jsonl | hotwash -
@@ -56,10 +58,12 @@ GitHub Action (from another repo):
 ```
 
 A Grok session directory contains `chat_history.jsonl`. Claude Code is a
-JSONL whose events have a `message` object. Anything else with `role`/`type`
-is generic JSONL. See [TRACE.md](TRACE.md).
+JSONL whose events have a `message` object. Codex CLI is a rollout JSONL
+under `~/.codex/sessions`. Anything else with `role`/`type` is generic
+JSONL. See [TRACE.md](TRACE.md).
 
 Exit code `1` if any finding is `error`. `0` if clean or warnings only.
+`--strict` exits `1` on warnings too.
 
 ## Detectors (v0)
 
@@ -67,8 +71,10 @@ Exit code `1` if any finding is `error`. `0` if clean or warnings only.
 | --- | --- |
 | `tool_error` | A tool failed and was not retried; error if the assistant then claimed success |
 | `tests_claim` | Assistant said tests passed, and no successful test runner is in the trace |
-| `ship_claim` | User asked to deploy or go live, and no *successful* curl, browser, or test ran |
+| `ship_claim` | User asked to deploy or go live, and no curl, browser, or test ran |
+| `verify_http` | User asked to ship (or the assistant claimed live) and the last curl/wget returned 4xx/5xx or a connection failure |
 | `push_claim` | User asked to git push, or the assistant claimed a push, and no successful `git push` ran |
+| `commit_claim` | User asked to commit, or the assistant claimed a commit, and no successful `git commit` ran |
 | `emdash` | Agent **wrote** an em or en dash into a file (not when deleting one) |
 | `git_identity` | `git commit` used a machine-local email GitHub cannot map |
 | `todos` | Last `todo_write` still has pending items (warn) |
@@ -83,9 +89,9 @@ Each detector is `Trace -> list[Finding]`. Add one, add a test.
 
 ## Status
 
-v0. Grok and Claude Code ingest, generic JSONL, session list, dump-trace,
-write-case, and `hotwash --eval`. Codex ingest and an optional LLM judge
-are not in v0.
+v0. Grok, Claude Code, and Codex ingest, generic JSONL, session list,
+dump-trace, write-case, and `hotwash --eval`. An optional LLM judge is
+not in v0.
 
 ## Develop
 
