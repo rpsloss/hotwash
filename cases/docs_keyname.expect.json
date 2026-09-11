@@ -2,6 +2,15 @@
   "rank": "CLEAN",
   "must_include": [],
   "must_not_include": [
-    "secret_write"
+    "commit_claim",
+    "emdash",
+    "git_identity",
+    "push_claim",
+    "secret_write",
+    "ship_claim",
+    "tests_claim",
+    "todos",
+    "tool_error",
+    "verify_http"
   ]
 }
